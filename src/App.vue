@@ -6,7 +6,7 @@ const navigation = ref(null)
 
 const links = [
   { text: 'Fairs', icon: 'celebration', url: { name: 'home' } },
-  { text: 'Companies', icon: 'business', url: { name: 'home' } },
+  { text: 'Companies', icon: 'business', url: { name: 'companies-index' } },
   { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } }
 ]
 </script>
