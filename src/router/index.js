@@ -4,6 +4,7 @@ import HallsView from '../views/halls/Index.vue'
 import CompaniesView from '../views/companies/Index.vue'
 
 import HallShowView from '../views/halls/Show.vue'
+import CompanyShowView from '../views/companies/Show.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +15,7 @@ const router = createRouter({
 
     { path: '/halls/:id', name: 'halls-show', component: HallShowView },
     { path: '/fairs/:id', name: 'fairs-show', component: HallShowView },
-    { path: '/companies/:id', name: 'companies-show', component: HallShowView }
+    { path: '/companies/:id', name: 'companies-show', component: CompanyShowView }
   ]
 })
 

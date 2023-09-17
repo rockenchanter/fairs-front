@@ -5,85 +5,75 @@
     <v-tab prepend-icon="event" value="three">Events</v-tab>
   </v-tabs>
 
-  <v-window v-model="tab" class="mt-5">
-    <v-window-item value="one">
-      <div class="mb-5 text-h4">{{ hall.name }}</div>
-      <p>{{ hall.description }}</p>
-    </v-window-item>
+  <v-container>
+    <v-window v-model="tab" class="mt-5">
+      <v-window-item value="one">
+        <div class="mb-5 text-h4">{{ hall.name }}</div>
+        <p>{{ hall.description }}</p>
+      </v-window-item>
 
-    <v-window-item value="two">
-      <v-row>
-        <v-col cols="12" md="4" v-for="img in hall.images" :key="img.id">
-          <v-img :src="img.url" />
-        </v-col>
-      </v-row>
-    </v-window-item>
+      <v-window-item value="two">
+        <v-row>
+          <v-col cols="12" md="4" v-for="img in hall.images" :key="img.id">
+            <v-img :src="img.url" />
+          </v-col>
+        </v-row>
+      </v-window-item>
 
-    <v-window-item value="three">
-      <v-row>
-        <v-col class="text-right">
-          <v-btn prepend-icon="home" text="house your next event" color="primary" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col md="10">
-          <v-timeline side="end">
-            <v-timeline-item v-for="fair in hall.fairs" size="large">
-              <template v-slot:icon>
-                <v-avatar size="x-large" :image="fair.organizer.image"></v-avatar>
-              </template>
+      <v-window-item value="three">
+        <v-row>
+          <v-col class="text-right">
+            <v-btn prepend-icon="home" text="house your next event" color="primary" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="10">
+            <v-timeline side="end">
+              <v-timeline-item v-for="fair in hall.fairs" size="large">
+                <template v-slot:icon>
+                  <v-avatar size="x-large" :image="fair.organizer.image"></v-avatar>
+                </template>
 
-              <v-card>
-                <v-card-item>
-                  <v-card-title class="d-flex justify-space-between align-center">
-                    <v-row>
-                      <v-col>
-                        {{ fair.name }}
-                      </v-col>
-                      <v-col class="text-right"> </v-col>
-                    </v-row>
-                  </v-card-title>
-                  <v-card-subtitle>
-                    <v-icon icon="date_range" start />
-                    <span>{{ fair.start_date }}</span>
-                  </v-card-subtitle>
+                <v-card>
+                  <v-card-item>
+                    <v-card-title class="d-flex justify-space-between align-center">
+                      <v-row>
+                        <v-col>
+                          {{ fair.name }}
+                        </v-col>
+                        <v-col class="text-right"> </v-col>
+                      </v-row>
+                    </v-card-title>
+                    <v-card-subtitle>
+                      <v-icon icon="date_range" start />
+                      <span>{{ fair.start_date }}</span>
+                    </v-card-subtitle>
 
-                  <div class="py-2">
-                    <div class="font-weight-light text-medium-emphasis">
-                      {{ fair.short_desc }}
+                    <div class="py-2">
+                      <div class="font-weight-light text-medium-emphasis">
+                        {{ fair.short_desc }}
+                      </div>
                     </div>
-                  </div>
-                </v-card-item>
+                  </v-card-item>
 
-                <v-card-actions>
-                  <v-tooltip
-                    v-for="industry in fair.industries"
-                    :text="industry.name"
-                    :key="industry.id"
-                  >
-                    <template v-slot:activator="{ props }">
-                      <v-icon
-                        v-bind="props"
-                        class="ms-2"
-                        :color="industry.color"
-                        :icon="industry.icon"
-                      />
-                    </template>
-                  </v-tooltip>
-                  <v-spacer />
-                  <v-btn text="read more" :to="{ name: 'fairs-show', params: { id: fair.id } }" />
-                </v-card-actions>
-              </v-card>
-            </v-timeline-item>
-          </v-timeline>
-        </v-col>
-      </v-row>
-    </v-window-item>
-  </v-window>
+                  <v-card-actions>
+                    <IndustryIndicators :industries="fair.industries" />
+                    <v-spacer />
+                    <v-btn text="read more" :to="{ name: 'fairs-show', params: { id: fair.id } }" />
+                  </v-card-actions>
+                </v-card>
+              </v-timeline-item>
+            </v-timeline>
+          </v-col>
+        </v-row>
+      </v-window-item>
+    </v-window>
+  </v-container>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import IndustryIndicators from '../../components/IndustryIndicators.vue'
 
 const tab = ref('three')
 

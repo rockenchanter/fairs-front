@@ -17,15 +17,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-tooltip
-            v-for="industry in company.industries"
-            :text="industry.name"
-            :key="industry.id"
-          >
-            <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" class="ms-2" :color="industry.color" :icon="industry.icon" />
-            </template>
-          </v-tooltip>
+          <IndustryIndicators :industries="company.industries" />
           <v-spacer />
           <v-btn
             append-icon="navigate_next"
@@ -39,6 +31,8 @@
 </template>
 
 <script setup>
+import IndustryIndicators from '../../components/IndustryIndicators.vue'
+
 const companies = [
   {
     id: 1,
