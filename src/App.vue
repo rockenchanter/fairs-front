@@ -5,7 +5,7 @@ import { ref } from 'vue'
 const navigation = ref(null)
 
 const links = [
-  { text: 'Fairs', icon: 'celebration', url: { name: 'home' } },
+  { text: 'Fairs', icon: 'celebration', url: { name: 'fairs-index' } },
   { text: 'Companies', icon: 'business', url: { name: 'companies-index' } },
   { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } }
 ]

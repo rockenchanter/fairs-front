@@ -32,6 +32,9 @@
 
 <script setup>
 import IndustryIndicators from '../../components/IndustryIndicators.vue'
+import { useText } from '@/composables/text'
+
+const { trim } = useText()
 
 const companies = [
   {
@@ -68,9 +71,4 @@ const companies = [
     address: { id: 1, street: 'Shenanigans 7', city: 'Scranton' }
   }
 ]
-
-const trim = (text, len) => {
-  if (text.length > len) return text.substring(0, 250) + '...'
-  else return text
-}
 </script>

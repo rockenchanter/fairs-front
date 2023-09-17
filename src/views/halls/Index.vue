@@ -5,7 +5,7 @@
       <v-card>
         <v-img :src="item.image" />
         <v-card-title>{{ item.name }}</v-card-title>
-        <v-card-text>{{ item.description }}</v-card-text>
+        <v-card-text>{{ trim(item.description, 250) }}</v-card-text>
         <v-card-actions>
           <v-chip prepend-icon="place" variant="outlined">
             {{ item.address.city }}
@@ -19,6 +19,10 @@
 </template>
 
 <script setup>
+import { useText } from '@/composables/text'
+
+const { trim } = useText()
+
 const halls = [
   {
     id: 1,
