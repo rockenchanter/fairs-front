@@ -2,7 +2,7 @@
   <div class="text-h4 my-5">List of halls</div>
   <v-row>
     <v-col md="4" v-for="item in halls" :key="item.id">
-      <v-card>
+      <v-card :to="{ name: 'halls-show', params: { id: item.id } }">
         <v-img :src="item.image" />
         <v-card-title>{{ item.name }}</v-card-title>
         <v-card-text>{{ trim(item.description, 250) }}</v-card-text>
@@ -10,8 +10,6 @@
           <v-chip prepend-icon="place" variant="outlined">
             {{ item.address.city }}
           </v-chip>
-          <v-spacer />
-          <v-btn text="read more" :to="{ name: 'halls-show', params: { id: item.id } }" />
         </v-card-actions>
       </v-card>
     </v-col>
