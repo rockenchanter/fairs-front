@@ -6,6 +6,7 @@ import FairsView from '../views/fairs/Index.vue'
 
 import HallShowView from '../views/halls/Show.vue'
 import CompanyShowView from '../views/companies/Show.vue'
+import FairShowView from '../views/fairs/Show.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,7 +17,7 @@ const router = createRouter({
     { path: '/fairs', name: 'fairs-index', component: FairsView },
 
     { path: '/halls/:id', name: 'halls-show', component: HallShowView },
-    { path: '/fairs/:id', name: 'fairs-show', component: HallShowView },
+    { path: '/fairs/:id', name: 'fairs-show', component: FairShowView },
     { path: '/companies/:id', name: 'companies-show', component: CompanyShowView }
   ]
 })

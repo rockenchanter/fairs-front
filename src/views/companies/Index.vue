@@ -1,40 +1,13 @@
 <template>
   <v-row>
     <v-col md="4" v-for="company in companies" :key="company.id">
-      <v-card>
-        <v-card-item>
-          <v-card-title>
-            <v-avatar :image="company.logo" size="large" /> {{ company.name }}
-          </v-card-title>
-        </v-card-item>
-        <v-card-subtitle
-          ><v-icon icon="place" /> {{ company.address.city }},
-          {{ company.address.street }}</v-card-subtitle
-        >
-
-        <v-card-text>
-          {{ trim(company.short_desc, 250) }}
-        </v-card-text>
-
-        <v-card-actions>
-          <IndustryIndicators :industries="company.industries" />
-          <v-spacer />
-          <v-btn
-            append-icon="navigate_next"
-            text="more"
-            :to="{ name: 'companies-show', params: { id: company.id } }"
-          />
-        </v-card-actions>
-      </v-card>
+      <CompanyCard :company="company" />
     </v-col>
   </v-row>
 </template>
 
 <script setup>
-import IndustryIndicators from '../../components/IndustryIndicators.vue'
-import { useText } from '@/composables/text'
-
-const { trim } = useText()
+import CompanyCard from '@/components/cards/Company.vue'
 
 const companies = [
   {

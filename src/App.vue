@@ -25,7 +25,7 @@ const links = [
       </template>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="navigation">
+    <v-navigation-drawer v-model="navigation" temporary>
       <v-list nav>
         <v-list-item
           v-for="link in links"
