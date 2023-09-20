@@ -1,6 +1,14 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
+
+import { useDataStore } from '@/stores/data.js'
+
+const { mobile } = useDisplay()
+const ds = useDataStore()
+
+onMounted(() => ds.setMobile(mobile.value))
 
 const navigation = ref(null)
 

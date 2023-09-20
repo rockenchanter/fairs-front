@@ -11,6 +11,12 @@ const vtfy = createVuetify({
     sets: {
       md
     }
+  },
+  defaults: {
+    VTextField: { variant: 'outlined' },
+    VFileInput: { variant: 'outlined' },
+    VTextarea: { variant: 'outlined' },
+    VSelect: { variant: 'outlined' }
   }
 })
 

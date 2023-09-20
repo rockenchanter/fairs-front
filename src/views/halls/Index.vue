@@ -1,26 +1,4 @@
-<template>
-  <div class="text-h4 my-5">List of halls</div>
-  <v-row>
-    <v-col md="4" v-for="item in halls" :key="item.id">
-      <v-card :to="{ name: 'halls-show', params: { id: item.id } }">
-        <v-img :src="item.image" />
-        <v-card-title>{{ item.name }}</v-card-title>
-        <v-card-text>{{ trim(item.description, 250) }}</v-card-text>
-        <v-card-actions>
-          <v-chip prepend-icon="place" variant="outlined">
-            {{ item.address.city }}
-          </v-chip>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
-</template>
-
 <script setup>
-import { useText } from '@/composables/text'
-
-const { trim } = useText()
-
 const halls = [
   {
     id: 1,
@@ -48,3 +26,12 @@ const halls = [
   }
 ]
 </script>
+
+<template>
+  <div class="text-h4 my-5">List of halls</div>
+  <v-row>
+    <v-col md="4" v-for="item in halls" :key="item.id">
+      <HallCard :hall="item" />
+    </v-col>
+  </v-row>
+</template>
