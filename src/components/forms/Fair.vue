@@ -38,13 +38,11 @@ const halls = [
 const item = reactive(props.fair)
 const city = ref('')
 const tab = ref('one')
-const selectHall = (id) => {
-  item.hall_id = id
-  console.log(id)
-}
+const selectHall = (id) => (item.hall_id = id)
 
 const sendForm = (event) => {
-  console.log(new FormData(event.target))
+  const fd = new FormData(event.target)
+  console.log(fd)
 }
 </script>
 

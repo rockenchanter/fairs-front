@@ -13,10 +13,11 @@ const vtfy = createVuetify({
     }
   },
   defaults: {
-    VTextField: { variant: 'outlined' },
-    VFileInput: { variant: 'outlined' },
-    VTextarea: { variant: 'outlined' },
-    VSelect: { variant: 'outlined' }
+    VTextField: { density: 'compact', variant: 'outlined' },
+    VFileInput: { density: 'compact', variant: 'outlined' },
+    VTextarea: { density: 'compact', variant: 'outlined' },
+    VSelect: { density: 'compact', variant: 'outlined' },
+    VSwitch: { density: 'compact', variant: 'outlined' }
   }
 })
 

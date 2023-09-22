@@ -14,7 +14,6 @@ export const useDataStore = defineStore('data', () => {
   const mobile = ref(false)
 
   const setMobile = (newValue) => {
-    console.log(newValue)
     mobile.value = newValue
   }
 

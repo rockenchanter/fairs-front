@@ -1,9 +1,7 @@
 <script setup>
-import { useText } from '@/composables/text'
 import FairForm from '@/components/forms/Fair.vue'
+import FairCard from '@/components/cards/Fair.vue'
 import { ref } from 'vue'
-
-const { trim } = useText()
 
 const cities = ref([])
 const name = ref('')
@@ -25,10 +23,6 @@ const fairs = [
     address: { city: 'Pabianice' }
   }
 ]
-
-const availableSlots = (hall_id) =>
-  fairs[hall_id].stalls.reduce((sum, stall) => (sum += stall.amount), 0)
-const send_rsvp = () => null
 </script>
 
 <template>
@@ -61,35 +55,9 @@ const send_rsvp = () => null
       </v-row>
     </v-form>
 
-    <v-row> </v-row>
-
     <v-row>
       <v-col md="4" v-for="(fair, index) in fairs" :key="fair.id">
-        <v-card :to="{ name: 'fairs-show', params: { id: fair.id } }">
-          <v-img :src="fair.image" />
-          <v-card-item>
-            <v-card-title>{{ fair.name }}</v-card-title>
-            <v-card-subtitle><v-icon icon="event" /> {{ fair.start_date }}</v-card-subtitle>
-          </v-card-item>
-
-          <v-card-text>{{ trim(fair.short_desc, 250) }}</v-card-text>
-
-          <v-card-actions>
-            <v-tooltip :text="availableSlots(index) ? 'Send RSVP' : 'All places booked'">
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  @click.prevent="send_rsvp"
-                  :icon="availableSlots(index) ? 'mail' : 'no_accounts'"
-                  :color="availableSlots(index) ? 'primary' : ''"
-                  :disabled="!availableSlots(index)"
-                />
-              </template>
-            </v-tooltip>
-            <v-spacer />
-            <v-chip variant="outlined" prepend-icon="place">{{ fair.address.city }}</v-chip>
-          </v-card-actions>
-        </v-card>
+        <FairCard :fair="fair" />
       </v-col>
     </v-row>
   </v-container>

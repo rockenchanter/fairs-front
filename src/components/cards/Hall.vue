@@ -1,8 +1,8 @@
 <script setup>
-import { useText } from '@/composables/text'
+import { useUtils } from '@/composables/utils.js'
 import { reactive } from 'vue'
 
-const { trim } = useText()
+const { trim } = useUtils()
 
 const props = defineProps({
   hall: { type: Object, required: true },

@@ -1,8 +1,8 @@
 <script setup>
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
-import { useText } from '@/composables/text'
+import { useUtils } from '@/composables/utils'
 
-const { trim } = useText()
+const { trim } = useUtils()
 
 defineProps({
   company: { type: Object, required: true },
