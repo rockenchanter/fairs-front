@@ -11,7 +11,7 @@ const props = defineProps({
 
 const item = reactive(props.hall)
 const { buildName } = useUtils()
-const tab = ref('two')
+const tab = ref('one')
 const deleteDialogs = reactive(new Array(item.images.length).fill(false))
 const snackbar = ref(false)
 
