@@ -40,6 +40,8 @@ const sendForm = (event) => {
 if (!item.images.length) for (let i = 1; i <= 3; i++) addImage()
 else addImage()
 
+if (!item.address) item.address = {}
+
 if (!item.stalls.length) for (let i = 1; i <= 3; i++) addStall()
 else addStall()
 </script>
@@ -66,6 +68,29 @@ else addStall()
                     name="price"
                     label="Price"
                   />
+                  <v-row>
+                    <v-col cols="12" md="4"
+                      ><v-text-field
+                        prepend-inner-icon="signpost"
+                        v-model.trim="item.address.street"
+                        name="address_street"
+                        label="Street"
+                    /></v-col>
+                    <v-col cols="12" md="4"
+                      ><v-text-field
+                        prepend-inner-icon="contact_mail"
+                        v-model.trim="item.address.street"
+                        name="address_zipcode"
+                        label="Zipcode"
+                    /></v-col>
+                    <v-col cols="12" md="4"
+                      ><v-text-field
+                        prepend-inner-icon="location_city"
+                        v-model.trim="item.address.street"
+                        name="address_city"
+                        label="City"
+                    /></v-col>
+                  </v-row>
                   <v-textarea
                     v-model.trim="item.description"
                     label="Description"
@@ -187,11 +212,6 @@ else addStall()
 
             <v-window-item value="three">
               <v-row v-for="stall in new_stalls">
-                <input
-                  type="hidden"
-                  :value="stall.hall_id"
-                  :name="buildName('stall', stall.id, '')"
-                />
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model.number="stall.size"
