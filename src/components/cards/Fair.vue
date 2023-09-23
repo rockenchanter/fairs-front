@@ -6,9 +6,9 @@ const props = defineProps({
 })
 
 const availableSlots = computed(() =>
-  props.fair.stalls.reduce((sum, stall) => (sum += stall.amount), 0)
+  props.fair.stalls.reduce((sum, stall) => (sum += stall.max_amount), 0)
 )
-const send_rsvp = () => null
+const send_request = () => null
 const { trim } = useUtils()
 </script>
 
@@ -23,11 +23,11 @@ const { trim } = useUtils()
     <v-card-text>{{ trim(fair.short_desc, 250) }}</v-card-text>
 
     <v-card-actions>
-      <v-tooltip :text="availableSlots ? 'Send RSVP' : 'All places booked'">
+      <v-tooltip :text="availableSlots ? 'Send request' : 'All places booked'">
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
-            @click.prevent="send_rsvp"
+            @click.prevent="send_request"
             :icon="availableSlots ? 'mail' : 'no_accounts'"
             :color="availableSlots ? 'primary' : ''"
             :disabled="!availableSlots"
