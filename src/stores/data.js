@@ -1,21 +1,37 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { reactive, computed, watch } from 'vue'
 
 export const useDataStore = defineStore('data', () => {
-  const cities = [
-    'Los Angeles',
-    'New York',
-    'Seattle',
-    'Baltimore',
-    'Las Vegas',
-    'San Diego',
-    'Dallas'
-  ]
-  const mobile = ref(false)
+  const data = reactive({
+    mobile: false,
+    user: null,
+    dialogs: {
+      auth: false
+    }
+  })
 
-  const setMobile = (newValue) => {
-    mobile.value = newValue
+  watch(
+    () => data.user,
+    (newValue, _) => {
+      if (newValue != null) data.dialogs.auth = false
+    }
+  )
+
+  const mobile = computed(() => data.mobile)
+  const user = computed(() => data.user)
+
+  const setMobile = (newValue) => (data.mobile = newValue)
+  const setUser = (newUser) => (data.user = newUser)
+  const setDialog = (dialog, value) => (data.dialogs[dialog] = value)
+
+  const authDialog = computed(() => data.dialogs.auth)
+
+  return {
+    mobile,
+    user,
+    setMobile,
+    setUser,
+    authDialog,
+    setDialog
   }
-
-  return { cities, mobile, setMobile }
 })
