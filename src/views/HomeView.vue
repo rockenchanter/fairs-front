@@ -1,5 +1,9 @@
-<script setup></script>
+<script setup>
+import { useDataStore } from '@/stores/data.js'
+
+const store = useDataStore()
+</script>
 
 <template>
-  <v-icon icon="favorite" />
+  {{ store.getUser }}
 </template>
