@@ -11,6 +11,7 @@ import { useApi } from '@/composables/api.js'
 const { mobile } = useDisplay()
 const ds = useDataStore()
 const api = useApi()
+const dialog = ref(false);
 
 onMounted(async () => {
   ds.setMobile(mobile.value)
@@ -20,13 +21,17 @@ onMounted(async () => {
 
 const navigation = ref(null)
 const tab = ref('login')
-
 const links = [
   { text: 'Fairs', icon: 'celebration', url: { name: 'fairs-index' } },
   { text: 'Companies', icon: 'business', url: { name: 'companies-index' } },
   { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } },
   { text: 'Invitations', icon: 'mail', url: { name: 'invitations' } }
 ]
+
+const logout = () => {
+    api.logout();
+    dialog.value = false;
+}
 </script>
 
 <template>
@@ -45,15 +50,15 @@ const links = [
             <v-list-item title="Profile" />
             <v-list-item title="Company" />
             <v-list-item title="Fairs" />
-            <v-list-item title="Logout" @click="api.logout" />
+            <v-list-item title="Logout" @click="logout" />
           </v-list>
         </v-menu>
 
-        <v-btn v-show="!ds.user" text="login" @click="ds.setDialog('auth', true)" />
+        <v-btn v-show="!ds.user" text="login" @click="dialog = true" />
       </template>
     </v-app-bar>
 
-    <v-dialog :model-value="ds.authDialog">
+    <v-dialog v-model="dialog">
       <v-card>
         <v-container>
           <v-tabs v-model="tab">
@@ -63,11 +68,11 @@ const links = [
 
           <v-window v-model="tab">
             <v-window-item value="login">
-              <LoginForm />
+              <LoginForm @close="dialog = false"/>
             </v-window-item>
 
             <v-window-item value="register">
-              <RegistrationForm />
+              <RegistrationForm @close="dialog = false"/>
             </v-window-item>
           </v-window>
         </v-container>
@@ -88,8 +93,12 @@ const links = [
 
     <v-main>
       <v-container>
-        <RouterView />
+          <v-snackbar :color="ds.alertData.color" location="top center" prominent elevation="10" variant="elevated" closable :model-value="ds.alert" @click:close="ds.closeAlert">
+              <div class="font-weight-bold">{{ds.alertData.title}}</div>
+              {{ ds.alertData.text }}
+          </v-snackbar>
+          <RouterView />
       </v-container>
     </v-main>
-  </v-app>
+    </v-app>
 </template>

@@ -1,21 +1,31 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import StallCard from '@/components/cards/Stall.vue'
 
 const tab = ref('one')
+const hall = ref({})
+const api = useApi();
+const route = useRoute();
 
-defineProps({
-  hall: { type: Object, required: true }
-})
+const fetchHall = async (id) => {
+    const data = await api.getHall(id);
+    console.log(data.hall);
+    hall.value = data.hall;
+}
+
+onMounted(() => fetchHall(route.params.id));
+watch(() => route.params.id, id => fetchHall(id))
 </script>
 
 <template>
   <v-tabs v-model="tab" bg-color="primary">
     <v-tab prepend-icon="info" value="one">Information</v-tab>
     <v-tab prepend-icon="collections" value="two">Gallery</v-tab>
-    <v-tab prepend-icon="event" value="three">Events</v-tab>
     <v-tab prepend-icon="storefront" value="four">Stalls</v-tab>
+    <v-tab prepend-icon="event" value="three">Events</v-tab>
   </v-tabs>
 
   <v-container>
@@ -26,9 +36,15 @@ defineProps({
       </v-window-item>
 
       <v-window-item value="two">
-        <v-row>
+        <v-row class="pb-2">
           <v-col cols="12" md="4" v-for="img in hall.images" :key="img.id">
-            <v-img :src="img.url" />
+              <v-card elevation="0">
+                <v-img :src="img.path" />
+                    <v-card-item>
+                        <v-card-subtitle class="text-center">{{ img.description }}</v-card-subtitle>
+                    </v-card-item>
+              </v-card>
+              
           </v-col>
         </v-row>
       </v-window-item>
