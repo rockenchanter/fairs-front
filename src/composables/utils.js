@@ -5,6 +5,5 @@ export function useUtils() {
   }
 
   const buildName = (prepend, index, append) => `${prepend}_${index}_${append}`
-
   return { trim, buildName }
 }
