@@ -11,7 +11,7 @@ import { useApi } from '@/composables/api.js'
 const { mobile } = useDisplay()
 const ds = useDataStore()
 const api = useApi()
-const dialog = ref(false);
+const dialog = ref(false)
 
 onMounted(async () => {
   ds.setMobile(mobile.value)
@@ -29,8 +29,8 @@ const links = [
 ]
 
 const logout = () => {
-    api.logout();
-    dialog.value = false;
+  api.logout()
+  dialog.value = false
 }
 </script>
 
@@ -68,11 +68,11 @@ const logout = () => {
 
           <v-window v-model="tab">
             <v-window-item value="login">
-              <LoginForm @close="dialog = false"/>
+              <LoginForm @close="dialog = false" />
             </v-window-item>
 
             <v-window-item value="register">
-              <RegistrationForm @close="dialog = false"/>
+              <RegistrationForm @close="dialog = false" />
             </v-window-item>
           </v-window>
         </v-container>
@@ -93,12 +93,21 @@ const logout = () => {
 
     <v-main>
       <v-container>
-          <v-snackbar :color="ds.alertData.color" location="top center" prominent elevation="10" variant="elevated" closable :model-value="ds.alert" @click:close="ds.closeAlert">
-              <div class="font-weight-bold">{{ds.alertData.title}}</div>
-              {{ ds.alertData.text }}
-          </v-snackbar>
-          <RouterView />
+        <v-snackbar
+          :color="ds.alertData.color"
+          location="top center"
+          prominent
+          elevation="10"
+          variant="elevated"
+          closable
+          :model-value="ds.alert"
+          @click:close="ds.closeAlert"
+        >
+          <div class="font-weight-bold">{{ ds.alertData.title }}</div>
+          {{ ds.alertData.text }}
+        </v-snackbar>
+        <RouterView />
       </v-container>
     </v-main>
-    </v-app>
+  </v-app>
 </template>

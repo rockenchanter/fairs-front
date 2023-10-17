@@ -25,7 +25,7 @@ const addAddress = () => {
 const openDialog = (address, index) => {
   pickedItem.address = address
   pickedItem.index = index
-  dialog.value = true;
+  dialog.value = true
 }
 
 const deleteAddress = () => {
@@ -36,7 +36,7 @@ const deleteAddress = () => {
 
 <template>
   <v-form>
-    <ConfirmationDialog @accept="deleteAddress" @decline="dialog = false" :visible="dialog"/>
+    <ConfirmationDialog @accept="deleteAddress" @decline="dialog = false" :visible="dialog" />
     <v-container>
       <v-row>
         <v-col cols="12" sm="4"

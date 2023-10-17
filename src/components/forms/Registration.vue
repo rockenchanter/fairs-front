@@ -6,14 +6,14 @@ const api = useApi()
 
 const data = reactive({})
 const errors = reactive({})
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 api.initErrors(['name', 'surname', 'email', 'password', 'image'], errors)
 
 const sendForm = async (event) => {
   api.initErrors(['name', 'surname', 'email', 'password', 'image'], errors)
   const resp = await api.register(new FormData(event.target))
   if (resp.errors) api.setErrors(resp.errors, errors)
-  else emit("close");
+  else emit('close')
 }
 
 const roles = ['exhibitor', 'organizer']

@@ -6,14 +6,14 @@ const api = useApi()
 
 const data = reactive({})
 const errors = reactive({})
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 api.initErrors(['email', 'password'], errors)
 
 const sendForm = async (event) => {
   api.initErrors(['email', 'password'], errors)
   const resp = await api.login(new FormData(event.target))
   if (resp.errors) api.setErrors(resp.errors, errors)
-  else emit("close");
+  else emit('close')
 }
 </script>
 

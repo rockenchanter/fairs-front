@@ -1,23 +1,26 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import StallCard from '@/components/cards/Stall.vue'
 
 const tab = ref('one')
 const hall = ref({})
-const api = useApi();
-const route = useRoute();
+const api = useApi()
+const route = useRoute()
 
 const fetchHall = async (id) => {
-    const data = await api.getHall(id);
-    console.log(data.hall);
-    hall.value = data.hall;
+  const data = await api.getHall(id)
+  console.log(data.hall)
+  hall.value = data.hall
 }
 
-onMounted(() => fetchHall(route.params.id));
-watch(() => route.params.id, id => fetchHall(id))
+onMounted(() => fetchHall(route.params.id))
+watch(
+  () => route.params.id,
+  (id) => fetchHall(id)
+)
 </script>
 
 <template>
@@ -38,13 +41,12 @@ watch(() => route.params.id, id => fetchHall(id))
       <v-window-item value="two">
         <v-row class="pb-2">
           <v-col cols="12" md="4" v-for="img in hall.images" :key="img.id">
-              <v-card elevation="0">
-                <v-img :src="img.path" />
-                    <v-card-item>
-                        <v-card-subtitle class="text-center">{{ img.description }}</v-card-subtitle>
-                    </v-card-item>
-              </v-card>
-              
+            <v-card elevation="0">
+              <v-img :src="img.path" />
+              <v-card-item>
+                <v-card-subtitle class="text-center">{{ img.description }}</v-card-subtitle>
+              </v-card-item>
+            </v-card>
           </v-col>
         </v-row>
       </v-window-item>
