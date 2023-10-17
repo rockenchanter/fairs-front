@@ -1,267 +1,158 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import ResponsiveBtn from '../ResponsiveBtn.vue'
+import { reactive, ref, onMounted } from 'vue'
 import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
-
-import { useUtils } from '@/composables/utils.js'
+import ImageForm from '@/components/forms/Image.vue'
+import StallForm from '@/components/forms/Stall.vue'
+import { useApi } from '@/composables/api.js'
 
 const props = defineProps({
-  hall: { type: Object, required: true }
+    id: { type: Number, required: false }
 })
+const emit = defineEmits(["close", "update"]);
+const errors = reactive({ address: {} })
 
-const item = reactive(props.hall)
-const { buildName } = useUtils()
-const tab = ref('one')
+const item = ref({})
+const api = useApi();
+const tab = ref("one");
 
-const new_images = reactive([])
-const new_stalls = reactive([])
-const deleteDialog = ref(false);
-
-const addImage = () => new_images.push({ id: new_images.length + 1, path: null, description: '' })
-const addStall = () => new_stalls.push({ id: new_stalls.length + 1 })
-
-const updateImage = (image) => {
+const sendForm = async (event) => {
+    const fd = new FormData(event.target)
+    api.initErrors(['name', 'price', 'street', 'city', 'zipcode', 'description', 'size'], errors)
+    if (item.value.id) {
+        const data = await api.updateHall(item.value.id, fd);
+        if (data.errors) api.setErrors(data.errors, errors);
+        else emit("update", data.hall)
+    }
+    else {
+        const data = await api.createHall(fd);
+        if (data.errors) api.setErrors(data.errors, errors);
+        else emit("close", data.hall);
+    }
 }
 
-const deleteImage = (index, image) => {
-  item.images.splice(index, 1);
-  deleteDialog.value = false;
+const addImage = async(image) => {
+    item.value.images.push(image);
+}
+
+const addStall = async(stall) => {
+    item.value.stalls.push(stall);
+}
+
+const deleteStall = (id) => {
+    const stalls = item.value.stalls;
+    deleteFromArray(id, stalls);
+}
+
+const deleteImage = (id) => {
+    const ims = item.value.images;
+    deleteFromArray(id, ims);
+}
+
+const deleteFromArray = (id, array) => {
+    let idx = -1;
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].id == id) {
+            idx = i; break;
+        }
+    }
+    if (idx != -1) array.splice(idx, 1);
 }
 
 
-const sendForm = (event) => {
-  const fd = new FormData(event.target)
-  console.log(fd)
-}
+onMounted(async () => {
+    if (props.id != null) {
+        const data = await api.getHall(props.id);
+        if (data.hall) item.value = data.hall;
+    }
+})
 
 if (!item.address) item.address = {};
 
-addImage()
-addStall()
 </script>
 
 <template>
-  <v-form @submit.prevent="sendForm">
-      <v-dialog width="auto" v-model="deleteDialog">
+    <v-form @submit.prevent="sendForm">
+        <v-container>
+            <v-row>
+                <v-col>
+                    <v-tabs v-model='tab'>
+                        <v-tab value="one">General</v-tab>
+                        <v-tab v-if="props.id" value="two">Images</v-tab>
+                        <v-tab v-if="props.id" value="three">Stalls</v-tab>
+                    </v-tabs>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-window v-model="tab" class="pa-2" >
+                        <v-window-item value="one">
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model.trim="item.name" :error-messages="errors.name" name="name"
+                                        label="Name" />
+                                    <v-row>
+                                        <v-col> <v-text-field type="number" :error-messages="errors.price"
+                                                v-model.number="item.price" name="price" label="Price" /></v-col>
+                                        <v-col> <v-text-field type="number" :error-messages="errors.size"
+                                                v-model.number="item.size" name="size" label="Size" /></v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12" md="4"><v-text-field :error-messages="errors.street"
+                                                prepend-inner-icon="signpost" v-model.trim="item.street" name="street"
+                                                label="Street" /></v-col>
+                                        <v-col cols="12" md="4"><v-text-field :error-messages="errors.zipcode"
+                                                prepend-inner-icon="contact_mail" v-model.trim="item.zipcode" name="zipcode"
+                                                label="Zipcode" /></v-col>
+                                        <v-col cols="12" md="4"><v-text-field :error-messages="errors.city"
+                                                prepend-inner-icon="location_city" v-model.trim="item.city" name="city"
+                                                label="City" /></v-col>
+                                    </v-row>
+                                    <v-textarea :error-messages="errors.description" v-model.trim="item.description"
+                                        label="Description" name="description" />
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-switch color="primary" v-model="item.parking" label="Parking" name="parking" />
+                                    <v-switch color="primary" v-model="item.internet" label="Internet access"
+                                        name="internet" />
+                                    <v-switch color="primary" v-model="item.dissability"
+                                        label="Accessibility for disabled people" name="dissability" />
+                                    <v-switch color="primary" v-model="item.pets" label="Pet friendly policy" name="pets" />
+                                    <v-switch color="primary" v-model="item.public" label="Available for rent"
+                                        name="public" />
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col class='text-right'>
+                                    <UpdateCreateBtn type="submit" :new_rec="!item.id" />
+                                </v-col>
+                            </v-row>
+                        </v-window-item>
 
-          <v-container>
-              <v-card>
-                  <v-card-item>
-                      <v-card-title>Are you sure?</v-card-title>
-                      <v-card-subtitle>This action can not be reversed</v-card-subtitle>
-                  </v-card-item>
+                        <v-window-item value="two">
+                            <v-row>
+                                <v-col cols="4" v-for="image in item.images" :key="image.id">
+                                    <ImageForm :image="image" @delete="deleteImage"/>
+                                </v-col>
+                                <v-col cols="4">
+                                    <ImageForm :id="item.id" @create="addImage"/>
+                                </v-col>
+                            </v-row>
+                        </v-window-item>
 
-                  <v-card-actions>
-                      <v-spacer />
-                          <v-btn color="red" text="yes" @click="deleteImage(index, image)" />
-                              <v-btn text="no" @click="deleteDialog = false" />
-                  </v-card-actions>
-              </v-card>
-          </v-container>
-      </v-dialog>
+                        <v-window-item value="three">
+                            <v-row>
+                                <v-col cols="4" v-for="stall in item.stalls" :key="stall.id">
+                                    <StallForm :stall="stall" @delete="deleteStall"/>
+                                </v-col>
+                                <v-col cols="4">
+                                    <StallForm :id="item.id" @create="addStall"/>
+                                </v-col>
+                            </v-row>
+                        </v-window-item>
+                    </v-window>
+                </v-col>
+            </v-row>
 
-      <v-container>
-          <v-row>
-              <v-col>
-                  <v-tabs class="mb-4" color="primary" v-model="tab" show-arrows>
-                      <v-tab value="one" prepend-icon="info" text="General" />
-                          <v-tab value="two" prepend-icon="collections" text="Images" />
-                              <v-tab value="three" prepend-icon="storefront" text="Stalls" />
-                  </v-tabs>
-
-                  <v-window v-model="tab">
-                      <v-window-item value="one">
-                          <v-row>
-                              <v-col cols="12" md="6">
-                                  <v-text-field v-model.trim="item.name" name="name" label="Name" />
-                                      <v-text-field
-                                          type="number"
-                                          v-model.number="item.price"
-                                          name="price"
-                                          label="Price"
-                                          />
-                                          <v-row>
-                                              <v-col cols="12" md="4"
-                                                  ><v-text-field
-                                                      prepend-inner-icon="signpost"
-                                                      v-model.trim="item.address.street"
-                                                      name="street"
-                                                      label="Street"
-                                                      /></v-col>
-                                              <v-col cols="12" md="4"
-                                                  ><v-text-field
-                                                      prepend-inner-icon="contact_mail"
-                                                      v-model.trim="item.address.street"
-                                                      name="zipcode"
-                                                      label="Zipcode"
-                                                      /></v-col>
-                                              <v-col cols="12" md="4"
-                                                  ><v-text-field
-                                                      prepend-inner-icon="location_city"
-                                                      v-model.trim="item.address.street"
-                                                      name="city"
-                                                      label="City"
-                                                      /></v-col>
-                                          </v-row>
-                                          <v-textarea
-                                              v-model.trim="item.description"
-                                              label="Description"
-                                              name="description"
-                                              />
-                              </v-col>
-                              <v-col cols="12" md="6">
-                                  <v-switch color="primary" v-model="item.parking" label="Parking" name="parking" />
-                                      <v-switch
-                                          color="primary"
-                                          v-model="item.internet"
-                                          label="Internet access"
-                                          name="internet"
-                                          />
-                                          <v-switch
-                                              color="primary"
-                                              v-model="item.dissability"
-                                              label="Accessibility for disabled people"
-                                              name="dissability"
-                                              />
-                                              <v-switch
-                                                  color="primary"
-                                                  v-model="item.pets"
-                                                  label="Pet friendly policy"
-                                                  name="pets"
-                                                  />
-                              </v-col>
-                          </v-row>
-                      </v-window-item>
-
-                      <v-window-item value="two">
-                          <v-row>
-                              <v-col
-                                  cols="12"
-                                  sm="6"
-                                  md="3"
-                                  v-for="(image, index) in item.images"
-                                  :key="image.id"
-                                  >
-                                  <v-card density="compact">
-                                      <v-img :src="image.path" />
-                                          <v-card-text
-                                              ><v-text-field label="Description" v-model.trim="image.description"
-                                                  /></v-card-text>
-                                          <v-card-actions>
-                                              <ResponsiveBtn
-                                              color="green"
-                                              text="update"
-                                              icon="update"
-                                              @click="updateImage(image)"
-                                              />
-                                              <v-spacer />
-                                                  <ResponsiveBtn
-                                                  @click='deleteDialog = true'
-                                                  color="red"
-                                                  text="delete"
-                                                  icon="delete"
-                                                  prepend
-                                                  />
-                                          </v-card-actions>
-                                  </v-card>
-                              </v-col>
-                          </v-row>
-
-                          <v-row>
-                              <v-col>
-                                  <span class="text-subtitle-2 font-weight-light"
-                                      >Empty fields will be ignored</span
-                                  >
-                              </v-col>
-                          </v-row>
-
-                          <v-row>
-                              <v-col>
-                                  <v-row v-for="image in new_images" :key="image.id">
-                                      <v-col cols="12" md="4"
-                                          ><v-file-input
-                                              label="Image"
-                                              prepend-icon=""
-                                              prepend-inner-icon="photo_camera"
-                                              v-model="image.file"
-                                              :name="buildName('image', image.id, 'path')"
-                                              /></v-col>
-                                      <v-col cols="12" md="8"
-                                          ><v-text-field
-                                              label="Description"
-                                              v-model="image.description"
-                                              :name="buildName('image', image.id, 'description')"
-                                              /></v-col>
-                                  </v-row>
-
-                                  <v-row>
-                                      <v-col class="text-right">
-                                          <ResponsiveBtn @click="addImage" icon="add" text="add another" color="green"
-                                          /></v-col>
-                                  </v-row>
-                              </v-col>
-                          </v-row>
-                      </v-window-item>
-
-                      <v-window-item value="three">
-                          <v-row v-for="stall in new_stalls">
-                              <v-col cols="12" sm="6">
-                                  <v-text-field
-                                      v-model.number="stall.size"
-                                      label="Size"
-                                      :name="buildName('stall', stall.id, 'size')"
-                                      />
-                                      <v-text-field
-                                          v-model.number="stall.max_amount"
-                                          label="Amount"
-                                          :name="buildName('stall', stall.id, 'max_amount')"
-                                          />
-                                          <v-file-input
-                                              accept="image/*"
-                                              prepend-icon=""
-                                              prepend-inner-icon="photo_camera"
-                                              v-model="stall.image"
-                                              label="Image"
-                                              :name="buildName('stall', stall.id, 'image')"
-                                              />
-                              </v-col>
-                              <v-col cols="12" sm="6" md="2">
-                                  <v-switch
-                                      color="primary"
-                                      v-model="stall.electricity"
-                                      label="Electricity"
-                                      :name="buildName('stall', stall.id, 'parking')"
-                                      />
-                                      <v-switch
-                                          color="primary"
-                                          v-model="stall.internet"
-                                          label="Network"
-                                          :name="buildName('stall', stall.id, 'network')"
-                                          />
-                                          <v-switch
-                                              color="primary"
-                                              v-model="stall.support"
-                                              label="Support"
-                                              :name="buildName('stall', stall.id, 'support')"
-                                              />
-                              </v-col>
-                          </v-row>
-
-                          <v-row>
-                              <v-col class="text-right">
-                                  <ResponsiveBtn @click="addStall" icon="add" text="add another" color="green"/>
-                              </v-col>
-                          </v-row>
-
-                          <v-row>
-                              <v-col class="text-right">
-                                  <UpdateCreateBtn type="submit" :new_rec="!item.id" />
-                              </v-col>
-                          </v-row>
-                      </v-window-item>
-                  </v-window>
-              </v-col>
-          </v-row>
-      </v-container>
-  </v-form>
+        </v-container>
+    </v-form>
 </template>

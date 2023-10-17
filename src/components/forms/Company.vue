@@ -1,8 +1,8 @@
 <script setup>
 import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
 import { useUtils } from '@/composables/utils.js'
-
 import { reactive, ref } from 'vue'
 
 const props = defineProps({
@@ -11,8 +11,7 @@ const props = defineProps({
 
 const { buildName } = useUtils()
 const item = reactive(props.company)
-
-const deleteDialog = ref(false)
+const dialog = ref(false)
 const pickedItem = reactive({})
 if (!item.addresses) item.addresses = [{ id: 1 }]
 
@@ -26,31 +25,18 @@ const addAddress = () => {
 const openDialog = (address, index) => {
   pickedItem.address = address
   pickedItem.index = index
-  deleteDialog.value = true
+  dialog.value = true;
 }
 
 const deleteAddress = () => {
   item.addresses.splice(pickedItem.index, 1)
-  deleteDialog.value = false
+  dialog.value = false
 }
 </script>
 
 <template>
   <v-form>
-    <v-dialog width="auto" v-model="deleteDialog">
-      <v-card>
-        <v-card-item>
-          <v-card-title>Are you sure?</v-card-title>
-        </v-card-item>
-        <v-card-text>This action can not be undone</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="deleteAddress()" color="red" text="yes" />
-          <v-btn @click="deleteDialog = false" text="no" />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+    <ConfirmationDialog @accept="deleteAddress" @decline="dialog = false" :visible="dialog"/>
     <v-container>
       <v-row>
         <v-col cols="12" sm="4"
