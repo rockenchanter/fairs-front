@@ -10,13 +10,6 @@ defineProps({
 <template>
   <v-card>
     <v-img :src="stall.image" />
-    <v-card-item>
-      <v-card-title class="text-right">
-        <v-chip prepend-icon="attach_money" variant="outlined">
-          {{ stall.price }}
-        </v-chip>
-      </v-card-title>
-    </v-card-item>
     <v-card-text>
       <div class="d-flex flex-wrap">
         <v-chip
