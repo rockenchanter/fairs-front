@@ -1,9 +1,23 @@
 <script setup>
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
+import CompanyForm from '@/components/forms/Company.vue'
 
-defineProps({
-  company: { type: Object, required: true }
-})
+const company = ref({ exhibitor: {}, industries: [] })
+const api = useApi()
+const route = useRoute()
+
+const fetchCompany = async (id) => {
+  const data = await api.getCompany(id)
+  company.value = data.company
+}
+onMounted(() => fetchCompany(route.params.id))
+watch(
+  () => route.params.id,
+  (id) => fetchCompany(id)
+)
 </script>
 
 <template>
@@ -13,21 +27,24 @@ defineProps({
         <v-row align="center" class="mb-1">
           <v-col md="8">
             <span class="text-h5">
-              <v-avatar :image="company.logo" size="x-large" /> {{ company.name }}</span
+              <v-avatar :image="company.image" size="x-large" /> {{ company.name }}</span
             >
           </v-col>
           <v-col class="text-right">
-            <v-tooltip :text="company.exhibitor.name">
+            <v-tooltip>
               <template v-slot:activator="{ props }">
                 <v-avatar v-bind="props" size="large" :image="company.exhibitor.image" />
               </template>
+              {{ company.exhibitor.name }} {{ company.exhibitor.surname }}
             </v-tooltip>
           </v-col>
         </v-row>
         <div class="mb-5">
           <IndustryIndicators :industries="company.industries" />
+          <v-spacer class="mb-2" />
+          <CompanyForm :id="company.id" @update="fetchCompany" />
         </div>
-        <p v-html="company.short_desc"></p>
+        <p v-html="company.description"></p>
       </v-col>
 
       <v-col>

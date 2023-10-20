@@ -4,6 +4,7 @@ import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
 import ImageForm from '@/components/forms/Image.vue'
 import StallForm from '@/components/forms/Stall.vue'
 import { useApi } from '@/composables/api.js'
+import { useUtils } from '@/composables/utils.js'
 
 const props = defineProps({
   id: { type: Number, required: false }
@@ -13,6 +14,7 @@ const errors = reactive({ address: {} })
 
 const item = ref({})
 const api = useApi()
+const utils = useUtils()
 const tab = ref('one')
 
 const sendForm = async (event) => {
@@ -39,23 +41,12 @@ const addStall = async (stall) => {
 
 const deleteStall = (id) => {
   const stalls = item.value.stalls
-  deleteFromArray(id, stalls)
+  utils.deleteFromArray(id, stalls)
 }
 
 const deleteImage = (id) => {
   const ims = item.value.images
-  deleteFromArray(id, ims)
-}
-
-const deleteFromArray = (id, array) => {
-  let idx = -1
-  for (let i = 0; i < array.length; i++) {
-    if (array[i].id == id) {
-      idx = i
-      break
-    }
-  }
-  if (idx != -1) array.splice(idx, 1)
+  utils.deleteFromArray(id, ims)
 }
 
 onMounted(async () => {

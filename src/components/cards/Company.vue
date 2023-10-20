@@ -14,16 +14,16 @@ defineProps({
   <v-card :to="{ name: 'companies-show', params: { id: company.id } }">
     <v-card-item>
       <v-card-title>
-        <v-avatar :image="company.logo" size="large" /> {{ company.name }}
+        <v-avatar :image="company.image" size="large" /> {{ company.name }}
       </v-card-title>
     </v-card-item>
     <v-card-subtitle
-      ><v-icon icon="place" /> {{ company.address.city }},
-      {{ company.address.street }}</v-card-subtitle
+      ><v-icon icon="place" /> {{ company.addresses[0].city }},
+      {{ company.addresses[0].street }}</v-card-subtitle
     >
 
     <v-card-text>
-      {{ trim(company.short_desc, trimText ? trimText : 250) }}
+      {{ trim(company.description, trimText ? trimText : 250) }}
     </v-card-text>
 
     <v-card-actions>

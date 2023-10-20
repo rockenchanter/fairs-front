@@ -17,6 +17,7 @@ onMounted(async () => {
   ds.setMobile(mobile.value)
   const resp = await api.authenticate({ locale: 'pl' })
   if (resp.user) ds.setUser(resp.user)
+  if (resp.industries) ds.setIndustries(resp.industries)
 })
 
 const navigation = ref(null)

@@ -12,7 +12,6 @@ const route = useRoute()
 
 const fetchHall = async (id) => {
   const data = await api.getHall(id)
-  console.log(data.hall)
   hall.value = data.hall
 }
 

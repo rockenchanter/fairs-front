@@ -5,6 +5,7 @@ export const useDataStore = defineStore('data', () => {
   const data = reactive({
     mobile: false,
     user: null,
+    industries: null,
     dialogs: {
       auth: false,
       hall: false
@@ -25,12 +26,14 @@ export const useDataStore = defineStore('data', () => {
 
   const mobile = computed(() => data.mobile)
   const user = computed(() => data.user)
+  const industries = computed(() => data.industries)
   const alertData = computed(() => data.alert)
   const alert = computed(() => data.alert.visible)
   const roleCheck = (role) => data.user && data.user.role == role
 
   const setMobile = (newValue) => (data.mobile = newValue)
   const setUser = (newUser) => (data.user = newUser)
+  const setIndustries = (newData) => (data.industries = newData)
   const showAlert = (type, text) => {
     data.alert.visible = true
     data.alert.text = text
@@ -50,9 +53,11 @@ export const useDataStore = defineStore('data', () => {
   return {
     mobile,
     user,
+    industries,
     roleCheck,
     setMobile,
     setUser,
+    setIndustries,
     alert,
     alertData,
     showAlert,

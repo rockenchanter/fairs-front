@@ -1,105 +1,222 @@
 <script setup>
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
+import AddressForm from '@/components/forms/Address.vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
+import { useDataStore } from '@/stores/data.js'
+import { useApi } from '@/composables/api.js'
 import { useUtils } from '@/composables/utils.js'
-import { reactive, ref } from 'vue'
 
 const props = defineProps({
-  company: { type: Object, required: true }
+  id: { type: Number, required: false }
 })
 
-const { buildName } = useUtils()
-const item = reactive(props.company)
+const item = ref({})
+const address = ref({})
+const errors = ref({})
+const addr_errors = ref({})
 const dialog = ref(false)
-const pickedItem = reactive({})
-if (!item.addresses) item.addresses = [{ id: 1 }]
+const confDialog = ref(false)
+const tab = ref('one')
 
-const addAddress = () => {
-  let nextId = 0
-  for (let address of item.addresses) if (address.id > nextId) nextId = address.id
-  nextId++
-  item.addresses.push({ id: nextId })
+const emit = defineEmits(['close', 'update'])
+const api = useApi()
+const utils = useUtils()
+const rtr = useRouter()
+const ds = useDataStore()
+
+const fetchCompany = async (actual, old) => {
+  if (old != actual && actual) {
+    const data = await api.getCompany(actual)
+    item.value = data.company
+  }
 }
 
-const openDialog = (address, index) => {
-  pickedItem.address = address
-  pickedItem.index = index
-  dialog.value = true
+watch(
+  () => props.id,
+  async (id, oldId) => await fetchCompany(id, oldId)
+)
+
+const sendForm = async (event) => {
+  const fd = new FormData(event.target)
+  api.initErrors(['name', 'industries', 'image', 'description'], errors)
+  api.initErrors(['city', 'street', 'zipcode'], addr_errors)
+  if (item.value.id) {
+    const data = await api.updateCompany(item.value.id, fd)
+    if (data.errors) {
+      errors.value = data.errors.company
+      addr_errors.value = data.errors.address
+    } else {
+      dialog.value = false
+      emit('update', data.company)
+    }
+  } else {
+    const data = await api.createCompany(fd)
+    if (data.errors) {
+      errors.value = data.errors.company
+      addr_errors.value = data.errors.address
+    } else {
+      dialog.value = false
+      emit('close', data.company)
+    }
+  }
 }
 
-const deleteAddress = () => {
-  item.addresses.splice(pickedItem.index, 1)
+const deleteCompany = () => {
+  confDialog.value = false
   dialog.value = false
+  api.deleteCompany(item.value.id)
+  rtr.push({ name: 'companies-index' })
+}
+const deleteAddress = (id) => {
+  utils.deleteFromArray(id, item.value.addresses)
+}
+
+const addAddress = (addr) => {
+  item.value.addresses.push(addr)
 }
 </script>
 
 <template>
-  <v-form>
-    <ConfirmationDialog @accept="deleteAddress" @decline="dialog = false" :visible="dialog" />
-    <v-container>
-      <v-row>
-        <v-col cols="12" sm="4"
-          ><v-text-field v-model.trim="item.name" name="name" label="Name"
-        /></v-col>
-        <v-col cols="12" sm="4"
-          ><v-select multiple v-model="item.industries" name="industries" label="Industries"
-        /></v-col>
-        <v-col cols="12" sm="4"
-          ><v-file-input
-            v-model="item.logo"
-            prepend-icon=""
-            prepend-inner-icon="photo_camera"
-            accept="image/*"
-            name="logo"
-            label="Logo"
-        /></v-col>
-      </v-row>
+  <v-dialog v-model="dialog">
+    <template v-slot:activator="{ props }">
+      <UpdateCreateBtn v-bind="props" :new_rec="item.id ? true : false" />
+    </template>
 
-      <v-row>
-        <v-col
-          ><v-textarea v-model.trim="item.description" name="description" label="Description"
-        /></v-col>
-      </v-row>
+    <v-card>
+      <v-container>
+        <v-card-title>
+          <v-tabs v-model="tab">
+            <v-tab value="one">General</v-tab>
+            <v-tab v-if="item.id" value="two">Addresses</v-tab>
+          </v-tabs>
+        </v-card-title>
 
-      <v-row v-for="(address, index) in item.addresses" :key="address.id" align="center">
-        <v-col cols="12" sm="3"
-          ><v-text-field
-            v-model.trim="address.city"
-            :name="buildName('address', address.id, 'city')"
-            label="City"
-        /></v-col>
-        <v-col cols="12" sm="4"
-          ><v-text-field
-            v-model.trim="address.street"
-            :name="buildName('address', address.id, 'street')"
-            label="Street"
-        /></v-col>
-        <v-col cols="12" sm="3"
-          ><v-text-field
-            v-model.trim="address.zipcode"
-            :name="buildName('address', address.id, 'zipcode')"
-            label="Zipcode"
-        /></v-col>
-        <v-col cols="12" sm="2"
-          ><ResponsiveBtn
-            @click="openDialog(address, index)"
-            prepend
-            color="red"
-            icon="delete"
-            text="delete"
-        /></v-col>
-      </v-row>
+        <v-card-text class="py-4">
+          <v-form @submit.prevent="sendForm">
+            <input type="hidden" name="exhibitor_id" :value="ds.user ? ds.user.id : 0" />
+            <v-window v-model="tab">
+              <v-window-item value="one">
+                <v-row>
+                  <v-col cols="12" sm="4"
+                    ><v-text-field
+                      :error-messages="errors.name"
+                      v-model.trim="item.name"
+                      name="name"
+                      label="Name"
+                  /></v-col>
+                  <v-col cols="12" sm="4"
+                    ><v-select
+                      :error-messages="errors.industries"
+                      v-model="item.industries"
+                      name="industry"
+                      :items="ds.industries"
+                      multiple
+                      item-title="name"
+                      item-value="id"
+                      label="Industries"
+                    >
+                      <template v-slot:selection="{ item }">
+                        <v-icon :icon="item.raw.icon" :color="item.raw.color" />
+                      </template>
+                      <template v-slot:item="{ props, item }">
+                        <v-list-item v-bind="props">
+                          <template v-slot:prepend>
+                            <v-icon :icon="item.raw.icon" :color="item.raw.color" />
+                          </template>
+                        </v-list-item>
+                      </template>
+                    </v-select>
+                  </v-col>
+                  <v-col v-if="!item.id" cols="12" sm="4"
+                    ><v-file-input
+                      :error-messages="errors.image"
+                      v-model="item.image"
+                      prepend-icon=""
+                      prepend-inner-icon="photo_camera"
+                      accept="image/*"
+                      name="image"
+                      label="Logo"
+                  /></v-col>
+                </v-row>
 
-      <v-row>
-        <v-col class="text-right">
-          <ResponsiveBtn @click="addAddress" prepend color="green" text="add another" icon="add"
-        /></v-col>
-      </v-row>
+                <v-row v-if="!item.id">
+                  <v-col>
+                    <v-text-field
+                      v-model.trim="address.street"
+                      :error-messages="addr_errors.street"
+                      label="Street"
+                      name="street"
+                    />
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      v-model.trim="address.zipcode"
+                      :error-messages="addr_errors.zipcode"
+                      label="Zipcode"
+                      name="zipcode"
+                    />
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      v-model.trim="address.city"
+                      :error-messages="addr_errors.city"
+                      label="City"
+                      name="city"
+                    />
+                  </v-col>
+                </v-row>
 
-      <v-row>
-        <v-col class="text-right"> <UpdateCreateBtn :new_rec="!item.id" /></v-col>
-      </v-row>
-    </v-container>
-  </v-form>
+                <v-row>
+                  <v-col
+                    ><v-textarea
+                      :error-messages="errors.description"
+                      v-model.trim="item.description"
+                      name="description"
+                      label="Description"
+                  /></v-col>
+                </v-row>
+
+                <v-row class="pb-2">
+                  <v-col class="text-right">
+                    <UpdateCreateBtn :new_rec="!item.id" type="submit" />
+                    <ResponsiveBtn
+                      class="ms-2"
+                      v-if="item.id"
+                      icon="delete"
+                      color="red"
+                      text="delete"
+                      @click="confDialog = true"
+                    />
+                    <ConfirmationDialog
+                      :visible="confDialog"
+                      @accept="deleteCompany"
+                      @decline="confDialog = false"
+                    />
+                  </v-col>
+                </v-row>
+              </v-window-item>
+
+              <v-window-item value="two">
+                <v-row>
+                  <v-col cols="4" v-for="address in item.addresses" :key="address.id">
+                    <AddressForm
+                      :address="address"
+                      @delete="deleteAddress"
+                      :disable-delete="item.addresses.length == 1"
+                    />
+                  </v-col>
+                  <v-col cols="4">
+                    <AddressForm @create="addAddress" />
+                  </v-col>
+                </v-row>
+              </v-window-item>
+            </v-window>
+          </v-form>
+        </v-card-text>
+      </v-container>
+    </v-card>
+  </v-dialog>
 </template>
