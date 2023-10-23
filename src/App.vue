@@ -15,7 +15,7 @@ const dialog = ref(false)
 
 onMounted(async () => {
   ds.setMobile(mobile.value)
-  const resp = await api.authenticate({ locale: 'pl' })
+  const resp = await api.authenticate({ locale: 'en' })
   if (resp.user) ds.setUser(resp.user)
   if (resp.industries) ds.setIndustries(resp.industries)
 })
@@ -39,6 +39,9 @@ const logout = () => {
   <v-app>
     <v-app-bar>
       <v-app-bar-nav-icon @click="navigation = !navigation" />
+      <v-app-bar-title>
+        <v-btn prepend-icon="festival" text="FairTime" :to="{ name: 'home' }" />
+      </v-app-bar-title>
       <template v-slot:append>
         <v-menu open-on-hover open-delay="0">
           <template v-slot:activator="{ props }">

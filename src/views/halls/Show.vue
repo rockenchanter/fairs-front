@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import StallCard from '@/components/cards/Stall.vue'
@@ -16,10 +16,9 @@ const fetchHall = async (id) => {
 }
 
 onMounted(() => fetchHall(route.params.id))
-watch(
-  () => route.params.id,
-  (id) => fetchHall(id)
-)
+onBeforeRouteUpdate(async (to, from) => {
+  if (to.params.id !== from.params.id) fetchHall(to.params.id)
+})
 </script>
 
 <template>

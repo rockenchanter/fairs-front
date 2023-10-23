@@ -55,26 +55,32 @@ export function useApi() {
 
     getHall: async (id) => await get(`/api/halls/${id}`),
     getCompany: async (id) => await get(`/api/companies/${id}`),
-    getHalls: async (params) => await get('/api/halls/', params),
-    getCompanies: async (params) => await get('/api/companies/', params),
+    getFair: async (id) => await get(`/api/fairs/${id}`),
+    getHalls: async (params) => await get('/api/halls', params),
+    getCompanies: async (params) => await get('/api/companies', params),
+    getFairs: async (params) => await get(`/api/fairs`, params),
+    getCities: async (params) => await get('/api/halls/cities', params),
 
     createHall: async (fd) => await post('/api/halls/create', fd),
     createImage: async (fd) => await post('/api/images/create', fd),
     createStall: async (fd) => await post('/api/stalls/create', fd),
     createAddress: async (fd) => await post('/api/addresses/create', fd),
     createCompany: async (fd) => await post('/api/companies/create', fd),
+    createFair: async (fd) => await post('/api/fairs/create', fd),
 
     updateHall: async (id, fd) => await update(`/api/halls/${id}`, fd),
     updateImage: async (id, fd) => await update(`/api/images/${id}`, fd),
     updateStall: async (id, fd) => await update(`/api/stalls/${id}`, fd),
     updateAddress: async (id, fd) => await update(`/api/addresses/${id}`, fd),
     updateCompany: async (id, fd) => await update(`/api/companies/${id}`, fd),
+    updateFair: async (id, fd) => await update(`/api/fairs/${id}`, fd),
 
     deleteHall: async (id) => await destroy(`/api/halls/${id}`),
     deleteImage: async (id) => await destroy(`/api/images/${id}`),
     deleteStall: async (id) => await destroy(`/api/stalls/${id}`),
     deleteAddress: async (id) => await destroy(`/api/addresses/${id}`),
     deleteCompany: async (id) => await destroy(`/api/companies/${id}`),
+    deleteFair: async (id) => await destroy(`/api/fairs/${id}`),
 
     initErrors: (fields, reactive_prop) => fields.forEach((key) => (reactive_prop[key] = [])),
     setErrors: (errors, reactive_prop) => {

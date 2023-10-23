@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
@@ -33,6 +33,11 @@ const fetchCompany = async (actual, old) => {
     item.value = data.company
   }
 }
+
+const hasCompany = computed(() => {
+  const usr = ds.user
+  return usr && usr.company
+})
 
 watch(
   () => props.id,
@@ -82,7 +87,11 @@ const addAddress = (addr) => {
 <template>
   <v-dialog v-model="dialog">
     <template v-slot:activator="{ props }">
-      <UpdateCreateBtn v-bind="props" :new_rec="item.id ? true : false" />
+      <UpdateCreateBtn
+        v-bind="props"
+        :new_rec="!item.id ? true : false"
+        v-show="ds.roleCheck('exhibitor') && !hasCompany"
+      />
     </template>
 
     <v-card>

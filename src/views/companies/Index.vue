@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import CompanyCard from '@/components/cards/Company.vue'
 import CompanyForm from '@/components/forms/Company.vue'
 import { useApi } from '@/composables/api.js'
@@ -7,11 +7,11 @@ import { useApi } from '@/composables/api.js'
 const companies = ref([])
 const api = useApi()
 
+const addCompany = (company) => companies.value.push(company)
 onMounted(async () => {
   const data = await api.getCompanies(null)
   companies.value = data.companies
 })
-const addCompany = (company) => companies.value.push(company)
 </script>
 
 <template>

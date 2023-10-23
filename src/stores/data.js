@@ -33,6 +33,7 @@ export const useDataStore = defineStore('data', () => {
 
   const setMobile = (newValue) => (data.mobile = newValue)
   const setUser = (newUser) => (data.user = newUser)
+  const setUserCompany = (cmpny) => (data.user.company = cmpny)
   const setIndustries = (newData) => (data.industries = newData)
   const showAlert = (type, text) => {
     data.alert.visible = true
@@ -57,6 +58,7 @@ export const useDataStore = defineStore('data', () => {
     roleCheck,
     setMobile,
     setUser,
+    setUserCompany,
     setIndustries,
     alert,
     alertData,

@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import CompanyForm from '@/components/forms/Company.vue'
@@ -14,10 +14,9 @@ const fetchCompany = async (id) => {
   company.value = data.company
 }
 onMounted(() => fetchCompany(route.params.id))
-watch(
-  () => route.params.id,
-  (id) => fetchCompany(id)
-)
+onBeforeRouteUpdate(async (to, from) => {
+  if (to.params.id !== from.params.id) fetchCompany(to.params.id)
+})
 </script>
 
 <template>
@@ -44,7 +43,7 @@ watch(
           <v-spacer class="mb-2" />
           <CompanyForm :id="company.id" @update="fetchCompany" />
         </div>
-        <p v-html="company.description"></p>
+        <p>{{ company.description }}</p>
       </v-col>
 
       <v-col>

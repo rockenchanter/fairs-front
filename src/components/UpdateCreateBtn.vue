@@ -1,7 +1,7 @@
 <script setup>
 import ResponsiveBtn from './ResponsiveBtn.vue'
 
-defineProps({
+const props = defineProps({
   new_rec: { type: Boolean, required: false }
 })
 </script>
