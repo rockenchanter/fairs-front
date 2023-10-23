@@ -20,7 +20,7 @@ onMounted(async () => {
   if (resp.industries) ds.setIndustries(resp.industries)
 })
 
-const navigation = ref(null)
+const navigation = ref(false)
 const tab = ref('login')
 const links = [
   { text: 'Fairs', icon: 'celebration', url: { name: 'fairs-index' } },
@@ -40,7 +40,13 @@ const logout = () => {
     <v-app-bar>
       <v-app-bar-nav-icon @click="navigation = !navigation" />
       <v-app-bar-title>
-        <v-btn prepend-icon="festival" text="FairTime" :to="{ name: 'home' }" />
+        <v-btn
+          variant="outlined"
+          color="primary"
+          prepend-icon="festival"
+          text="FairTime"
+          :to="{ name: 'home' }"
+        />
       </v-app-bar-title>
       <template v-slot:append>
         <v-menu open-on-hover open-delay="0">
@@ -58,7 +64,14 @@ const logout = () => {
           </v-list>
         </v-menu>
 
-        <v-btn v-show="!ds.user" text="login" @click="dialog = true" />
+        <v-btn
+          class="me-4"
+          v-show="!ds.user"
+          variant="outlined"
+          prepend-icon="account_circle"
+          text="sign in"
+          @click="dialog = true"
+        />
       </template>
     </v-app-bar>
 
@@ -113,5 +126,48 @@ const logout = () => {
         <RouterView />
       </v-container>
     </v-main>
+
+    <footer class="ftr">
+      <v-container class="pt-10">
+        <v-row justify="space-between">
+          <v-col md="3">
+            <v-img src="/assets/logo.svg" />
+          </v-col>
+
+          <v-col md="4">
+            <div class="text-h6">Site map</div>
+            <v-list bg-color="#2F2E41">
+              <v-list-item rounded :to="{ name: 'fairs-index' }">Fairs</v-list-item>
+              <v-list-item rounded :to="{ name: 'companies-index' }">Companies</v-list-item>
+              <v-list-item rounded :to="{ name: 'halls-index' }">Halls</v-list-item>
+              <v-list-item rounded :to="{ name: 'invitations' }">Invitations</v-list-item>
+              <v-list-item v-if="ds.user" rounded :to="{ name: 'profile' }">Profile</v-list-item>
+            </v-list>
+          </v-col>
+
+          <v-col md="4">
+            <div class="text-h6">Contact</div>
+            <v-list bg-color="#2F2E41">
+              <v-list-item rounded>fake.email@example.com</v-list-item>
+              <v-list-item rounded>(+48) 999 999 999</v-list-item>
+              <v-list-item rounded>Fake Street <br />36310 FakeCity</v-list-item>
+            </v-list>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col>
+            <p class="text-center">&copy; 2023 FairTime. All Rights Reserved.</p>
+          </v-col>
+        </v-row>
+      </v-container>
+    </footer>
   </v-app>
 </template>
+
+<style>
+.ftr {
+  background-color: #2f2e41;
+  color: white;
+}
+</style>
