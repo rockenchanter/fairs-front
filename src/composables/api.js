@@ -60,6 +60,8 @@ export function useApi() {
     getCompanies: async (params) => await get('/api/companies', params),
     getFairs: async (params) => await get(`/api/fairs`, params),
     getCities: async (params) => await get('/api/halls/cities', params),
+    getStalls: async (params) => await get('/api/halls/stalls', params),
+    getInvitations: async (params) => await get('/api/invitations', params),
 
     createHall: async (fd) => await post('/api/halls/create', fd),
     createImage: async (fd) => await post('/api/images/create', fd),
@@ -67,6 +69,7 @@ export function useApi() {
     createAddress: async (fd) => await post('/api/addresses/create', fd),
     createCompany: async (fd) => await post('/api/companies/create', fd),
     createFair: async (fd) => await post('/api/fairs/create', fd),
+    createInvitation: async (fd) => await post('/api/invitations/create', fd),
 
     updateHall: async (id, fd) => await update(`/api/halls/${id}`, fd),
     updateImage: async (id, fd) => await update(`/api/images/${id}`, fd),
@@ -74,6 +77,7 @@ export function useApi() {
     updateAddress: async (id, fd) => await update(`/api/addresses/${id}`, fd),
     updateCompany: async (id, fd) => await update(`/api/companies/${id}`, fd),
     updateFair: async (id, fd) => await update(`/api/fairs/${id}`, fd),
+    updateInvitation: async (fd) => await update(`/api/invitations`, fd),
 
     deleteHall: async (id) => await destroy(`/api/halls/${id}`),
     deleteImage: async (id) => await destroy(`/api/images/${id}`),

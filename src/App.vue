@@ -17,6 +17,10 @@ onMounted(async () => {
   ds.setMobile(mobile.value)
   const resp = await api.authenticate({ locale: 'en' })
   if (resp.user) ds.setUser(resp.user)
+  if (ds.user && ds.user.role == 'exhibitor') {
+    const data = (await api.getCompanies({ exhibitor_id: ds.user.id })).companies
+    if (data.length) ds.setUserCompany(data[0])
+  }
   if (resp.industries) ds.setIndustries(resp.industries)
 })
 
@@ -108,7 +112,7 @@ const logout = () => {
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main class="full">
       <v-container>
         <v-snackbar
           :color="ds.alertData.color"
@@ -141,7 +145,12 @@ const logout = () => {
               <v-list-item rounded :to="{ name: 'companies-index' }">Companies</v-list-item>
               <v-list-item rounded :to="{ name: 'halls-index' }">Halls</v-list-item>
               <v-list-item rounded :to="{ name: 'invitations' }">Invitations</v-list-item>
-              <v-list-item v-if="ds.user" rounded :to="{ name: 'profile' }">Profile</v-list-item>
+              <v-list-item
+                v-if="ds.user"
+                rounded
+                :to="{ name: 'profile', params: { id: ds.user.id } }"
+                >Profile</v-list-item
+              >
             </v-list>
           </v-col>
 
@@ -169,5 +178,8 @@ const logout = () => {
 .ftr {
   background-color: #2f2e41;
   color: white;
+}
+.full {
+  min-height: 100vh;
 }
 </style>

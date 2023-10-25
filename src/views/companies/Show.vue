@@ -4,14 +4,18 @@ import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import CompanyForm from '@/components/forms/Company.vue'
+import FairCard from '@/components/cards/Fair.vue'
 
 const company = ref({ exhibitor: {}, industries: [] })
 const api = useApi()
 const route = useRoute()
+const fairs = ref([])
 
 const fetchCompany = async (id) => {
   const data = await api.getCompany(id)
+  const f = await api.getFairs({ company_id: data.company.id })
   company.value = data.company
+  fairs.value = f.fairs
 }
 onMounted(() => fetchCompany(route.params.id))
 onBeforeRouteUpdate(async (to, from) => {
@@ -48,20 +52,11 @@ onBeforeRouteUpdate(async (to, from) => {
 
       <v-col>
         <div class="text-h5 my-4">Find us here</div>
-        <v-card
-          v-for="fair in company.fairs"
-          class="my-4 d-flex justify-start flex-wrap"
-          :key="fair.id"
-          :to="{ name: 'fairs-show', params: { id: fair.id } }"
-        >
-          <v-avatar rounded="0" size="80">
-            <v-img :src="fair.logo" />
-          </v-avatar>
-          <v-card-item>
-            <div class="text-subtitle-2 font-weight-bold">{{ fair.name }}</div>
-            <v-card-subtitle>{{ fair.name }} </v-card-subtitle>
-          </v-card-item>
-        </v-card>
+        <v-row>
+          <v-col sm="6" md="4" v-for="fair in fairs" :id="fair.id">
+            <FairCard :fair="fair" />
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
