@@ -3,16 +3,25 @@ import HallCard from '@/components/cards/Hall.vue'
 import HallForm from '@/components/forms/Hall.vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
 import { reactive, ref, onMounted, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
+import { watch } from 'vue'
 
-const halls = reactive([])
 const api = useApi()
 const ds = useDataStore()
+const route = useRoute()
+const router = useRouter()
+
+const halls = reactive([])
 const hall_id = ref(null)
 const dialog = ref(false)
 const confDialog = ref(false)
+
+// search
+const cities = ref([])
+const name = ref(route.query.name)
+const city = ref(route.query.city)
 
 const headers = [
   { title: 'Id', key: 'id' },
@@ -28,14 +37,6 @@ const visible_halls = computed(() => {
   const data = []
   for (let h of halls) if (h.public == 'true') data.push(h)
   return data
-})
-
-onMounted(async () => {
-  const data = await api.getHalls({})
-  halls.splice(0)
-  for (let h of data.halls) {
-    halls.push(convertHall(h))
-  }
 })
 
 const convertHall = (hall) => {
@@ -62,7 +63,6 @@ const deleteHall = (item) => {
       break
     }
   }
-
   if (idx != -1) halls.splice(idx, 1)
 }
 
@@ -79,6 +79,30 @@ const replaceItem = async (id) => {
     }
   }
 }
+
+const fetchHalls = async (params) => {
+  const data = await api.getHalls(params)
+  halls.splice(0)
+  for (let h of data.halls) {
+    halls.push(convertHall(h))
+  }
+}
+
+const find = () => {
+  const params = {}
+  if (name.value) params.name = name.value
+  if (city.value) params.city = city.value
+  router.push({ query: params })
+  fetchHalls(params)
+}
+
+onMounted(async () => {
+  fetchHalls({})
+  const cdata = await api.getCities(null)
+  cities.value = cdata.cities
+})
+
+watch(city, find)
 </script>
 
 <template>
@@ -130,7 +154,27 @@ const replaceItem = async (id) => {
   <div v-else>
     <v-row align="center">
       <v-col>
-        <div class="text-h4 my-5">List of halls</div>
+        <v-text-field
+          v-model.trim="name"
+          name="name"
+          label="Name"
+          clearable
+          append-inner-icon="search"
+          @click:append-inner="find"
+          @keydown.enter="find"
+          @click:clear="find"
+        />
+      </v-col>
+      <v-col>
+        <v-select
+          :items="cities"
+          clearable
+          item-value="name"
+          name="city"
+          label="City"
+          item-title="name"
+          v-model="city"
+        />
       </v-col>
     </v-row>
 
