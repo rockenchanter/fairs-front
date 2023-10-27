@@ -35,18 +35,12 @@ export const useDataStore = defineStore('data', () => {
   const setUser = (newUser) => (data.user = newUser)
   const setUserCompany = (cmpny) => (data.user.company = cmpny)
   const setIndustries = (newData) => (data.industries = newData)
-  const showAlert = (type, text) => {
+  const showAlert = (type, text, title) => {
     data.alert.visible = true
     data.alert.text = text
-    if (type == 'error') {
-      data.alert.title = 'Something went really bad...'
-      data.alert.color = 'red'
-    }
-    if (type == 'success') {
-      data.alert.title = 'Hurray! All went well'
-      data.alert.color = 'green'
-    }
-    if (type != 'error') setTimeout(() => closeAlert(), 5000)
+    data.alert.type = type
+    if (title) data.alert.title = title
+    setTimeout(() => closeAlert(), 5000)
   }
 
   const closeAlert = () => (data.alert.visible = false)

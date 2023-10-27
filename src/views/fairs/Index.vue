@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
 import FairForm from '@/components/forms/Fair.vue'
@@ -8,20 +9,35 @@ import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
 
 const api = useApi()
 const ds = useDataStore()
-const dialog = ref(false)
+const route = useRoute()
+const router = useRouter()
 
-const name = ref('')
-const city = ref('')
+const dialog = ref(false)
+const name = ref(route.query.name)
+const city = ref(route.query.city)
+const organizer_id = ref(route.query.organizer_id)
 
 const cities = ref([])
 const fairs = ref([])
 
-const fetchFairs = async () => {
+const buildParams = () => {
   const params = {}
+  if (organizer_id.value) params.organizer_id = organizer_id.value
   if (name.value) params.name = name.value
   if (city.value) params.city = city.value
+  return params
+}
+
+const fetchFairs = async (params) => {
   const data = await api.getFairs(params)
   fairs.value = data.fairs
+}
+
+const refresh = () => {
+  const params = buildParams()
+  delete params.organizer_id
+  router.push({ query: params })
+  fetchFairs(params)
 }
 
 const addFair = async (fair_id) => {
@@ -30,10 +46,21 @@ const addFair = async (fair_id) => {
   dialog.value = false
 }
 
+watch(city, refresh)
+watch(
+  () => route.query.organizer_id,
+  (neww, old) => {
+    if (neww) {
+      name.value = null
+      fetchFairs({ organizer_id: neww })
+    }
+  }
+)
+
 onMounted(async () => {
   const cts = await api.getCities(null)
   cities.value = cts.cities
-  fetchFairs()
+  fetchFairs(buildParams())
 })
 </script>
 
@@ -41,11 +68,21 @@ onMounted(async () => {
   <v-container>
     <v-row>
       <v-col cols="6" sm="5">
-        <v-text-field v-model="name" name="name" label="Name" />
+        <v-text-field
+          v-model="name"
+          name="name"
+          label="Name"
+          clearable
+          append-inner-icon="search"
+          @click:append-inner="refresh"
+          @keydown.enter="refresh"
+          @click:clear="refresh"
+        />
       </v-col>
-      <v-col cols="6" sm="4">
+      <v-col cols="6" sm="5">
         <v-select
           v-model="city"
+          clearable
           :items="cities"
           item-value="name"
           item-title="name"
@@ -53,9 +90,6 @@ onMounted(async () => {
           label="City"
           prepend-inner-icon="location_city"
         />
-      </v-col>
-      <v-col sm="3">
-        <ResponsiveBtn color="red" icon="search" text="find" blockMobile @click="fetchFairs" />
       </v-col>
     </v-row>
 

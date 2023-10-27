@@ -1,29 +1,20 @@
 <script setup>
-import { RouterView } from 'vue-router'
-import LoginForm from '@/components/forms/Login.vue'
-import RegistrationForm from '@/components/forms/Registration.vue'
+import { RouterView, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
+import LoginForm from '@/components/forms/Login.vue'
+import RegistrationForm from '@/components/forms/Registration.vue'
 import { useDataStore } from '@/stores/data.js'
 import { useApi } from '@/composables/api.js'
 
-const { mobile } = useDisplay()
-const ds = useDataStore()
 const api = useApi()
+const ds = useDataStore()
+const router = useRouter()
+const { mobile } = useDisplay()
+
+const dataLoaded = ref(false)
 const dialog = ref(false)
-
-onMounted(async () => {
-  ds.setMobile(mobile.value)
-  const resp = await api.authenticate({ locale: 'en' })
-  if (resp.user) ds.setUser(resp.user)
-  if (ds.user && ds.user.role == 'exhibitor') {
-    const data = (await api.getCompanies({ exhibitor_id: ds.user.id })).companies
-    if (data.length) ds.setUserCompany(data[0])
-  }
-  if (resp.industries) ds.setIndustries(resp.industries)
-})
-
 const navigation = ref(false)
 const tab = ref('login')
 const links = [
@@ -32,11 +23,21 @@ const links = [
   { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } },
   { text: 'Invitations', icon: 'mail', url: { name: 'invitations' } }
 ]
-
 const logout = () => {
   api.logout()
+  router.push({ name: 'home' })
   dialog.value = false
 }
+
+onMounted(async () => {
+  ds.setMobile(mobile.value)
+  if (!dataLoaded.value) {
+    dataLoaded.value = true
+    const resp = await api.authenticate({ locale: 'en' })
+    if (resp.user) ds.setUser(resp.user)
+    if (resp.industries) ds.setIndustries(resp.industries)
+  }
+})
 </script>
 
 <template>
@@ -53,17 +54,27 @@ const logout = () => {
         />
       </v-app-bar-title>
       <template v-slot:append>
-        <v-menu open-on-hover open-delay="0">
+        <v-menu open-on-hover open-delay="0" v-if="ds.user">
           <template v-slot:activator="{ props }">
-            <v-avatar v-if="ds.user" class="me-2" v-bind="props">
+            <v-avatar class="me-2" v-bind="props">
               <v-img :src="ds.user.image" />
             </v-avatar>
           </template>
 
           <v-list>
-            <v-list-item title="Profile" />
-            <v-list-item title="Company" />
-            <v-list-item title="Fairs" />
+            <v-list-item disabled>
+              <v-list-item-title>{{ ds.user.name }} {{ ds.user.surname }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              v-if="ds.roleCheck('exhibitor') && ds.user.company"
+              :to="{ name: 'companies-show', params: { id: ds.user.company.id } }"
+              title="Company"
+            />
+            <v-list-item
+              v-if="ds.roleCheck('organizer')"
+              :to="{ name: 'fairs-index', query: { organizer_id: ds.user.id } }"
+              title="Fairs"
+            />
             <v-list-item title="Logout" @click="logout" />
           </v-list>
         </v-menu>
@@ -114,19 +125,21 @@ const logout = () => {
 
     <v-main class="full">
       <v-container>
-        <v-snackbar
-          :color="ds.alertData.color"
-          location="top center"
-          prominent
-          elevation="10"
-          variant="elevated"
-          closable
-          :model-value="ds.alert"
-          @click:close="ds.closeAlert"
-        >
-          <div class="font-weight-bold">{{ ds.alertData.title }}</div>
-          {{ ds.alertData.text }}
-        </v-snackbar>
+        <div class="alert-wrapper">
+          <v-alert
+            :color="ds.alertData.color"
+            prominent
+            elevation="10"
+            variant="elevated"
+            closable
+            :type="ds.alertData.type"
+            :model-value="ds.alert"
+            :text="ds.alertData.text"
+            :title="ds.alertData.title"
+            @click:close="ds.closeAlert"
+            class="positioned-alert"
+          />
+        </div>
         <RouterView />
       </v-container>
     </v-main>
@@ -179,7 +192,14 @@ const logout = () => {
   background-color: #2f2e41;
   color: white;
 }
+
 .full {
   min-height: 100vh;
+}
+
+.alert-wrapper {
+  position: fixed;
+  right: 5vw;
+  z-index: 100;
 }
 </style>

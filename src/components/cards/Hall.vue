@@ -30,7 +30,7 @@ if (props.link) {
             <v-icon
               v-bind="props"
               class="me-2"
-              v-if="hall.parking"
+              v-if="hall.parking == 'true'"
               icon="local_parking"
               color="primary"
             />
@@ -38,12 +38,24 @@ if (props.link) {
         </v-tooltip>
         <v-tooltip text="Free Wi-Fi">
           <template v-slot:activator="{ props }">
-            <v-icon v-bind="props" class="me-2" v-if="hall.internet" icon="wifi" color="primary" />
+            <v-icon
+              v-bind="props"
+              class="me-2"
+              v-if="hall.internet == 'true'"
+              icon="wifi"
+              color="primary"
+            />
           </template>
         </v-tooltip>
         <v-tooltip text="Pets friendly">
           <template v-slot:activator="{ props }">
-            <v-icon v-bind="props" class="me-2" v-if="hall.pets" icon="pets" color="primary" />
+            <v-icon
+              v-bind="props"
+              class="me-2"
+              v-if="hall.pets == 'true'"
+              icon="pets"
+              color="primary"
+            />
           </template>
         </v-tooltip>
         <v-tooltip text="Accessible for everyone">
@@ -51,7 +63,7 @@ if (props.link) {
             <v-icon
               v-bind="props"
               class="me-2"
-              v-if="hall.dissability"
+              v-if="hall.dissability == 'true'"
               icon="accessible"
               color="primary"
             />

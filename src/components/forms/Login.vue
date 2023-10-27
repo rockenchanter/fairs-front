@@ -1,8 +1,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { useApi } from '@/composables/api.js'
+import { useDataStore } from '@/stores/data.js'
 
 const api = useApi()
+const ds = useDataStore()
 
 const data = reactive({})
 const errors = reactive({})

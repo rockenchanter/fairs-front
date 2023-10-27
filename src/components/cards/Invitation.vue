@@ -2,6 +2,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useApi } from '@/composables/api.js'
+import { useDataStore } from '@/stores/data.js'
 
 import ResponsiveBtn from '../ResponsiveBtn.vue'
 import StallCard from './Stall.vue'
@@ -12,10 +13,12 @@ const props = defineProps({
 })
 
 const api = useApi()
+const ds = useDataStore()
 const item = reactive(props.invitation)
 const stallDialog = ref(false)
 const selectedItem = ref({})
 const stalls = ref([])
+const respondable = ref(true)
 
 const decision = ref(0)
 
@@ -42,8 +45,11 @@ const sendResponse = async () => {
   if (selectedItem.value.id) fd.append('stall_id', selectedItem.value.id)
 
   const data = await api.updateInvitation(fd)
-  console.log(fd)
-  console.log(data)
+  if (!data.errors) {
+    if (stallDialog.value) stallDialog.value = false
+    respondable.value = false
+    ds.showAlert('success', '', 'Success')
+  }
 }
 
 const acceptRequest = () => {
@@ -57,7 +63,8 @@ const acceptInvitation = () => {
 }
 
 const declineInvitation = () => {
-  console.log('REJECTED')
+  decision.value = 2
+  sendResponse()
 }
 </script>
 
@@ -69,7 +76,8 @@ const declineInvitation = () => {
     </v-card-item>
 
     <v-card-text class="mt-3">
-      <div v-if="item.invitation">
+      <!-- invitation -->
+      <div v-if="item.invitation || (!item.stall_id && item.status == 1)">
         <RouterLink
           :to="{ name: 'profile', params: { id: item.fair.organizer_id } }"
           class="font-weight-bold"
@@ -79,6 +87,8 @@ const declineInvitation = () => {
         </RouterLink>
         has invited you.
       </div>
+
+      <!-- request -->
       <div v-else>
         <RouterLink
           :to="{ name: 'profile', params: { id: item.company.exhibitor_id } }"
@@ -110,7 +120,14 @@ const declineInvitation = () => {
 
       <v-dialog width="auto" v-model="stallDialog" v-else>
         <template v-slot:activator="{ props }">
-          <ResponsiveBtn v-bind="props" color="green" prepend text="accept" icon="done" />
+          <ResponsiveBtn
+            v-bind="props"
+            color="green"
+            prepend
+            text="accept"
+            icon="done"
+            :disabled="!respondable"
+          />
         </template>
 
         <v-card>
@@ -162,6 +179,7 @@ const declineInvitation = () => {
       </v-dialog>
 
       <ResponsiveBtn
+        :disabled="!respondable"
         @click="declineInvitation"
         color="red"
         prepend

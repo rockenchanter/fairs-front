@@ -1,27 +1,41 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUtils } from '@/composables/utils.js'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
 
 const props = defineProps({
-  fair: { type: Object, required: true }
+  fair: { type: Object, required: true },
+  deletable: { type: Boolean, required: false }
 })
 
 const api = useApi()
+const route = useRoute()
 const ds = useDataStore()
+const can_send_request = ref(true)
 
 const availableSlots = computed(() => {
   return props.fair.hall.stalls.reduce((sum, stall) => (sum += stall.max_amount), 0)
 })
-const send_request = async () => {
+const send_request = async (is_request) => {
   const fd = new FormData()
-  fd.append('fair_id', props.fair.id)
+  const fid = props.fair.id
+  const cid = route.params.id || ds.user.company.id
+  fd.append('fair_id', fid)
   fd.append('company_id', ds.user.company.id)
-  const data = await api.createInvitation(fd)
-  console.log(data)
+  let data = null
+  if (is_request) data = await api.createInvitation(fd)
+  else data = await api.deleteInvitation(cid, fid)
+
+  if (!data.errors && is_request) can_send_request.value = false
+  else {
+    console.log(data.errors.invitation)
+    ds.showAlert('error', data.errors.invitation, 'We could not proceed')
+  }
 }
+
 const { trim } = useUtils()
 </script>
 
@@ -65,11 +79,22 @@ const { trim } = useUtils()
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
-            @click.prevent="send_request"
+            @click.prevent="send_request(1)"
             :icon="availableSlots ? 'mail' : 'no_accounts'"
             :color="availableSlots ? 'primary' : ''"
-            :disabled="!availableSlots"
-            v-if="ds.roleCheck('exhibitor')"
+            :disabled="!availableSlots || !can_send_request"
+            v-if="!deletable && ds.roleCheck('exhibitor')"
+          />
+        </template>
+      </v-tooltip>
+      <v-tooltip :text="ds.roleCheck('organizer') ? 'Remove company' : 'Cancel visit'">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            @click.prevent="send_request(0)"
+            icon="cancel"
+            color="red"
+            v-if="deletable"
           />
         </template>
       </v-tooltip>

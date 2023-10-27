@@ -10,7 +10,13 @@ const ds = useDataStore()
 
 onMounted(async () => {
   const data = await api.getInvitations()
-  invitations.value = data.invitations
+  const is_exhibitor = ds.roleCheck('exhibitor')
+  const invites = []
+  for (let invite of data.invitations) {
+    if (!is_exhibitor && !invite.invitation) invites.push(invite)
+    else if (is_exhibitor && invite.invitation) invites.push(invite)
+  }
+  invitations.value = invites
 })
 </script>
 

@@ -34,24 +34,21 @@ export function useApi() {
   }
 
   return {
-    authenticate: async (searchParams) => {
-      return await get('/api/authenticate', searchParams)
-    },
     login: async (fd) => {
       const resp = await post('/api/login', fd)
       if (!resp.errors) store.setUser(resp.user)
       return resp
     },
     logout: async () => {
-      const resp = await get('/api/logout')
+      get('/api/logout')
       store.setUser(null)
-      return resp
     },
     register: async (fd) => {
       const resp = await post('/api/register', fd)
       if (!resp.errors) store.setUser(resp.user)
       return resp
     },
+    authenticate: async (params) => await get('/api/authenticate', params),
 
     getHall: async (id) => await get(`/api/halls/${id}`),
     getCompany: async (id) => await get(`/api/companies/${id}`),
@@ -85,6 +82,8 @@ export function useApi() {
     deleteAddress: async (id) => await destroy(`/api/addresses/${id}`),
     deleteCompany: async (id) => await destroy(`/api/companies/${id}`),
     deleteFair: async (id) => await destroy(`/api/fairs/${id}`),
+    deleteInvitation: async (cid, fid) =>
+      await destroy(`/api/invitations?company_id=${cid}&fair_id=${fid}`),
 
     initErrors: (fields, reactive_prop) => fields.forEach((key) => (reactive_prop[key] = [])),
     setErrors: (errors, reactive_prop) => {
