@@ -2,17 +2,21 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useApi } from '@/composables/api.js'
-import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import StallCard from '@/components/cards/Stall.vue'
+import FairCard from '@/components/cards/Fair.vue'
 
 const tab = ref('one')
-const hall = ref({})
 const api = useApi()
 const route = useRoute()
 
+const hall = ref({})
+const fairs = ref([])
+
 const fetchHall = async (id) => {
   const data = await api.getHall(id)
+  const data_fairs = await api.getFairs({ hall_id: data.hall.id })
   hall.value = data.hall
+  fairs.value = data_fairs.fairs
 }
 
 onMounted(() => fetchHall(route.params.id))
@@ -50,49 +54,9 @@ onBeforeRouteUpdate(async (to, from) => {
       </v-window-item>
 
       <v-window-item value="three">
-        <v-row>
-          <v-col class="text-right">
-            <v-btn prepend-icon="home" text="house your next event" color="primary" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col md="10">
-            <v-timeline side="end">
-              <v-timeline-item v-for="fair in hall.fairs" size="large">
-                <template v-slot:icon>
-                  <v-avatar size="x-large" :image="fair.organizer.image"></v-avatar>
-                </template>
-
-                <v-card>
-                  <v-card-item>
-                    <v-card-title class="d-flex justify-space-between align-center">
-                      <v-row>
-                        <v-col>
-                          {{ fair.name }}
-                        </v-col>
-                        <v-col class="text-right"> </v-col>
-                      </v-row>
-                    </v-card-title>
-                    <v-card-subtitle>
-                      <v-icon icon="date_range" start />
-                      <span>{{ fair.start_date }}</span>
-                    </v-card-subtitle>
-
-                    <div class="py-2">
-                      <div class="font-weight-light text-medium-emphasis">
-                        {{ fair.short_desc }}
-                      </div>
-                    </div>
-                  </v-card-item>
-
-                  <v-card-actions>
-                    <IndustryIndicators :industries="fair.industries" />
-                    <v-spacer />
-                    <v-btn text="read more" :to="{ name: 'fairs-show', params: { id: fair.id } }" />
-                  </v-card-actions>
-                </v-card>
-              </v-timeline-item>
-            </v-timeline>
+        <v-row class="py-4">
+          <v-col md="4" v-for="fair in fairs">
+            <FairCard :fair="fair" />
           </v-col>
         </v-row>
       </v-window-item>

@@ -6,6 +6,7 @@ import { useDataStore } from '@/stores/data.js'
 import CompanyCard from '@/components/cards/Company.vue'
 import FairForm from '@/components/forms/Fair.vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
+import IndustrySelect from '@/components/IndustrySelect.vue'
 
 const tab = ref('one')
 const item = ref({ hall: {}, organizer: {} })
@@ -47,9 +48,11 @@ const fetchFair = async (id) => {
   item.value = data.fair
   for (let ind of data.fair.industries) industries.value.push(ind.id)
   const ids = []
-  for (let fp of item.value.fair_proxies) ids.push(fp.company_id)
-  const cdata = await api.getCompanies({ id: ids })
-  guests.value = cdata.companies
+  for (let fp of item.value.fair_proxies) if (fp.status == 1) ids.push(fp.company_id)
+  if (ids.length > 0) {
+    const cdata = await api.getCompanies({ id: ids })
+    guests.value = cdata.companies
+  }
 }
 
 const deleteFair = async () => {
@@ -73,7 +76,7 @@ onBeforeRouteUpdate(async (to, from) => {
       <v-col md="10">
         <v-tabs v-model="tab" color="primary">
           <v-tab prepend-icon="info" value="one">Information</v-tab>
-          <v-tab prepend-icon="account_circle" value="two">Guests</v-tab>
+          <v-tab prepend-icon="account_circle" value="two">Guests ({{ guests.length }})</v-tab>
         </v-tabs>
       </v-col>
     </v-row>
@@ -180,32 +183,7 @@ onBeforeRouteUpdate(async (to, from) => {
                 <v-card-text>
                   <v-row>
                     <v-col>
-                      <v-select
-                        v-model="industries"
-                        name="industry"
-                        :items="ds.industries"
-                        multiple
-                        item-title="name"
-                        item-value="id"
-                        label="Industries"
-                      >
-                        <template v-slot:prepend-item>
-                          <v-list-item title="Select All" @click="toggle" />
-                          <v-divider class="mt-2"></v-divider>
-                        </template>
-
-                        <template v-slot:selection="{ item }">
-                          <v-icon :icon="item.raw.icon" :color="item.raw.color" />
-                        </template>
-
-                        <template v-slot:item="{ props, item }">
-                          <v-list-item v-bind="props">
-                            <template v-slot:prepend>
-                              <v-icon :icon="item.raw.icon" :color="item.raw.color" />
-                            </template>
-                          </v-list-item>
-                        </template>
-                      </v-select>
+                      <IndustrySelect name="industry" v-model="industries" />
                     </v-col>
 
                     <v-col>
@@ -236,7 +214,12 @@ onBeforeRouteUpdate(async (to, from) => {
         </v-row>
         <v-row class="pa-5">
           <v-col md="4" v-for="cmpny in guests" :key="cmpny.id" v-if="guests.length">
-            <CompanyCard :company="cmpny" :trimText="150" />
+            <CompanyCard
+              :company="cmpny"
+              :trimText="150"
+              :deletable="ds.roleCheck('organizer') && ds.user.id == item.organizer_id"
+              :fair="item.id"
+            />
           </v-col>
           <v-col v-else class="text-center">
             <v-img src="/assets/empty.svg" />

@@ -45,20 +45,27 @@ const convertHall = (hall) => {
   return hall
 }
 
-const openHallDialog = (item) => {
+const openHallDialog = (item_id) => {
   hall_id.value = null
-  if (item) {
-    hall_id.value = item.value
+  if (item_id) {
+    hall_id.value = item_id
   }
   dialog.value = true
 }
 
-const deleteHall = (item) => {
+const openConfDialog = (item_id) => {
+  confDialog.value = true
+  if (item_id) {
+    hall_id.value = item_id
+  }
+}
+
+const deleteHall = () => {
   confDialog.value = false
-  api.deleteHall(item.value)
+  api.deleteHall(hall_id.value)
   let idx = -1
   for (let i = 0; i < halls.length; i++) {
-    if (halls[i].id == item.value) {
+    if (halls[i].id == hall_id.value) {
       idx = i
       break
     }
@@ -107,6 +114,14 @@ watch(city, find)
 
 <template>
   <div v-if="ds.roleCheck('administrator')">
+    <v-dialog v-model="dialog">
+      <v-card>
+        <HallForm :id="hall_id" @close="addItem" @update="replaceItem" />
+      </v-card>
+    </v-dialog>
+
+    <ConfirmationDialog @accept="deleteHall" @decline="confDialog = false" :visible="confDialog" />
+
     <v-row>
       <v-col>
         <v-data-table density="compact" :headers="headers" :items="halls">
@@ -129,26 +144,15 @@ watch(city, find)
             />
           </template>
           <template v-slot:item.actions="{ item }">
-            <RouterLink :to="{ name: 'halls-show', params: { id: item.value } }"
+            <RouterLink :to="{ name: 'halls-show', params: { id: item.raw.id } }"
               ><v-icon icon="visibility" color="blue"
             /></RouterLink>
-            <v-icon class="mx-2" icon="edit" color="orange" @click="openHallDialog(item)" />
-            <v-icon icon="delete" color="red" @click="confDialog = true" />
-            <ConfirmationDialog
-              @accept="deleteHall(item)"
-              @decline="confDialog = false"
-              :visible="confDialog"
-            />
+            <v-icon class="mx-2" icon="edit" color="orange" @click="openHallDialog(item.raw.id)" />
+            <v-icon icon="delete" color="red" @click="openConfDialog(item.raw.id)" />
           </template>
         </v-data-table>
       </v-col>
     </v-row>
-
-    <v-dialog v-model="dialog">
-      <v-card>
-        <HallForm :id="hall_id" @close="addItem" @update="replaceItem" />
-      </v-card>
-    </v-dialog>
   </div>
 
   <div v-else>

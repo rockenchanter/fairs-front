@@ -21,6 +21,7 @@ const industry = ref(route.query.industry || [])
 const companies = ref([])
 
 const addCompany = (company) => {
+  ds.setUserCompany(company)
   companyDialog.value = false
   companies.value.push(company)
 }

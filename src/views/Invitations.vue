@@ -13,8 +13,8 @@ onMounted(async () => {
   const is_exhibitor = ds.roleCheck('exhibitor')
   const invites = []
   for (let invite of data.invitations) {
-    if (!is_exhibitor && !invite.invitation) invites.push(invite)
-    else if (is_exhibitor && invite.invitation) invites.push(invite)
+    if (!is_exhibitor && !invite.invitation && invite.status == 0) invites.push(invite)
+    else if (is_exhibitor && !invite.stall_id) invites.push(invite)
   }
   invitations.value = invites
 })

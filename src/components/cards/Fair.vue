@@ -28,11 +28,12 @@ const send_request = async (is_request) => {
   let data = null
   if (is_request) data = await api.createInvitation(fd)
   else data = await api.deleteInvitation(cid, fid)
+  can_send_request.value = false
 
-  if (!data.errors && is_request) can_send_request.value = false
-  else {
-    console.log(data.errors.invitation)
-    ds.showAlert('error', data.errors.invitation, 'We could not proceed')
+  if (!data.errors && is_request) {
+    ds.showAlert('success', null, 'Request has been sent')
+  } else {
+    if (data.errors) ds.showAlert('error', data.errors.invitation, 'We could not proceed')
   }
 }
 
@@ -94,6 +95,7 @@ const { trim } = useUtils()
             @click.prevent="send_request(0)"
             icon="cancel"
             color="red"
+            :disabled="!can_send_request"
             v-if="deletable"
           />
         </template>

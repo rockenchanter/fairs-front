@@ -63,8 +63,8 @@ const acceptInvitation = () => {
 }
 
 const declineInvitation = () => {
-  decision.value = 2
-  sendResponse()
+  api.deleteInvitation(item.company_id, item.fair_id)
+  respondable.value = false
 }
 </script>
 
@@ -168,7 +168,7 @@ const declineInvitation = () => {
               <ResponsiveBtn
                 prepend
                 text="send"
-                :disabled="!selectedItem.id"
+                :disabled="!selectedItem.id && !respondable"
                 @click="acceptInvitation"
                 icon="check"
                 color="green"

@@ -1,10 +1,11 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
-import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
-import ImageForm from '@/components/forms/Image.vue'
-import StallForm from '@/components/forms/Stall.vue'
+
 import { useApi } from '@/composables/api.js'
 import { useUtils } from '@/composables/utils.js'
+import ImageForm from '@/components/forms/Image.vue'
+import StallForm from '@/components/forms/Stall.vue'
+import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
 
 const props = defineProps({
   id: { type: Number, required: false }
@@ -164,7 +165,7 @@ if (!item.address) item.address = {}
               </v-row>
               <v-row>
                 <v-col class="text-right">
-                  <UpdateCreateBtn type="submit" :new_rec="!item.id" />
+                  <ResponsiveBtn color="primary" icon="save" text="save" type="submit" />
                 </v-col>
               </v-row>
             </v-window-item>

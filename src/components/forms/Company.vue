@@ -1,7 +1,6 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import UpdateCreateBtn from '@/components/UpdateCreateBtn.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
 import AddressForm from '@/components/forms/Address.vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
@@ -52,6 +51,7 @@ const sendForm = async (event) => {
 
 const deleteCompany = () => {
   confDialog.value = false
+  ds.setUserCompany(null)
   api.deleteCompany(item.value.id)
   rtr.push({ name: 'companies-index' })
 }
@@ -63,7 +63,9 @@ const addAddress = (addr) => {
   item.value.addresses.push(addr)
 }
 
-onMounted(() => fetchCompany())
+onMounted(() => {
+  if (props.id) fetchCompany()
+})
 </script>
 
 <template>
@@ -163,7 +165,7 @@ onMounted(() => fetchCompany())
 
               <v-row class="pb-2">
                 <v-col class="text-right">
-                  <UpdateCreateBtn :new_rec="!item.id" type="submit" />
+                  <ResponsiveBtn icon="save" color="primary" type="submit" text="save" />
                   <ResponsiveBtn
                     class="ms-2"
                     v-if="item.id"

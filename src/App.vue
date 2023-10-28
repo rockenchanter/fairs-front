@@ -20,8 +20,7 @@ const tab = ref('login')
 const links = [
   { text: 'Fairs', icon: 'celebration', url: { name: 'fairs-index' } },
   { text: 'Companies', icon: 'business', url: { name: 'companies-index' } },
-  { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } },
-  { text: 'Invitations', icon: 'mail', url: { name: 'invitations' } }
+  { text: 'Halls', icon: 'meeting_room', url: { name: 'halls-index' } }
 ]
 const logout = () => {
   api.logout()
@@ -73,7 +72,7 @@ onMounted(async () => {
             <v-list-item
               v-if="ds.roleCheck('organizer')"
               :to="{ name: 'fairs-index', query: { organizer_id: ds.user.id } }"
-              title="Fairs"
+              title="My fairs"
             />
             <v-list-item title="Logout" @click="logout" />
           </v-list>
@@ -120,6 +119,15 @@ onMounted(async () => {
           :to="link.url"
           :prependIcon="link.icon"
         />
+        <v-list-item
+          v-if="ds.user && !ds.roleCheck('administrator')"
+          :to="{ name: 'invitations' }"
+          prepend-icon="mail"
+        >
+          <v-list-item-title>
+            {{ ds.roleCheck('exhibitor') ? 'Invitations' : 'Requests' }}</v-list-item-title
+          >
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

@@ -6,7 +6,7 @@ const emit = defineEmits(['accept', 'decline'])
 </script>
 
 <template>
-  <v-dialog width="auto" :model-value="visible">
+  <v-dialog width="auto" :model-value="visible" persistent>
     <v-card>
       <v-card-item>
         <v-card-title>Are you sure?</v-card-title>
