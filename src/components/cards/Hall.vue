@@ -24,6 +24,7 @@ if (props.link) {
     <v-img v-if="hall.images[0]" :src="hall.images[0].path" />
     <v-card-item>
       <v-card-title>{{ hall.name }}</v-card-title>
+      <v-card-subtitle><v-icon icon="money" color="green"/> {{ hall.price }}</v-card-subtitle>
       <v-card-subtitle>
         <v-tooltip text="Parking">
           <template v-slot:activator="{ props }">

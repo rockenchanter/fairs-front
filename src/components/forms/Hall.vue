@@ -53,7 +53,7 @@ const deleteImage = (id) => {
 onMounted(async () => {
   if (props.id != null) {
     const data = await api.getHall(props.id)
-    if (data.hall) item.value = data.hall
+    if (data) item.value = data
   }
 })
 

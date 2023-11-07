@@ -165,7 +165,6 @@ onMounted(async () => {
               <v-list-item rounded :to="{ name: 'fairs-index' }">Fairs</v-list-item>
               <v-list-item rounded :to="{ name: 'companies-index' }">Companies</v-list-item>
               <v-list-item rounded :to="{ name: 'halls-index' }">Halls</v-list-item>
-              <v-list-item rounded :to="{ name: 'invitations' }">Invitations</v-list-item>
               <v-list-item
                 v-if="ds.user"
                 rounded

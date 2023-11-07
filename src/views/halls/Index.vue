@@ -82,7 +82,7 @@ const replaceItem = async (id) => {
   const item = await api.getHall(id)
   for (let i = 0; i < halls.length; i++) {
     if (halls[i].id == id) {
-      halls[i] = convertHall(item.hall)
+      halls[i] = convertHall(item)
     }
   }
 }
@@ -90,7 +90,7 @@ const replaceItem = async (id) => {
 const fetchHalls = async (params) => {
   const data = await api.getHalls(params)
   halls.splice(0)
-  for (let h of data.halls) {
+  for (let h of data) {
     halls.push(convertHall(h))
   }
 }

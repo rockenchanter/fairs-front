@@ -45,12 +45,12 @@ const toggle = () => {
   else item.value.industries = []
 }
 
-const findHalls = async (event) => {
+const findHalls = async () => {
   item.value.hall_id = null
   const params = { start: item.value.start, end_date: item.value.end }
   if (city.value) params.city = city.value
   const data = await api.getHalls(params)
-  halls.value = data.halls
+  halls.value = data
 }
 
 const sendForm = async (event) => {

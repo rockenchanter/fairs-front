@@ -14,9 +14,9 @@ const fairs = ref([])
 
 const fetchHall = async (id) => {
   const data = await api.getHall(id)
-  const data_fairs = await api.getFairs({ hall_id: data.hall.id })
-  hall.value = data.hall
-  fairs.value = data_fairs.fairs
+  const data_fairs = await api.getFairs({ hall_id: data.id })
+  hall.value = data
+  fairs.value = data_fairs
 }
 
 onMounted(() => fetchHall(route.params.id))

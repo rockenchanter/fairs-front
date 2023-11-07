@@ -60,12 +60,12 @@ export function useApi() {
     getStalls: async (params) => await get('/api/halls/stalls', params),
     getInvitations: async (params) => await get('/api/invitations', params),
 
-    createHall: async (fd) => await post('/api/halls/create', fd),
-    createImage: async (fd) => await post('/api/images/create', fd),
-    createStall: async (fd) => await post('/api/stalls/create', fd),
-    createAddress: async (fd) => await post('/api/addresses/create', fd),
-    createCompany: async (fd) => await post('/api/companies/create', fd),
-    createFair: async (fd) => await post('/api/fairs/create', fd),
+    createHall: async (fd) => await post('/api/halls', fd),
+    createImage: async (fd) => await post('/api/images', fd),
+    createStall: async (fd) => await post('/api/stalls', fd),
+    createAddress: async (fd) => await post('/api/addresses', fd),
+    createCompany: async (fd) => await post('/api/companies', fd),
+    createFair: async (fd) => await post('/api/fairs', fd),
     createInvitation: async (fd) => await post('/api/invitations/create', fd),
 
     updateHall: async (id, fd) => await update(`/api/halls/${id}`, fd),
