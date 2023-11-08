@@ -18,9 +18,9 @@ const editForm = ref(false)
 
 const fetchCompany = async (id) => {
   const data = await api.getCompany(id)
-  const f = await api.getFairs({ company_id: data.company.id })
-  company.value = data.company
-  fairs.value = f.fairs
+  const f = await api.getFairs({ company_id: data.id })
+  company.value = data
+  fairs.value = f
 }
 onMounted(() => fetchCompany(route.params.id))
 watch(

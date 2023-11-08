@@ -18,6 +18,7 @@ const companyDialog = ref(false)
 
 const name = ref(route.query.name || '')
 const industry = ref(route.query.industry || [])
+const exhibitor = ref(route.query.exhibitor_id || null)
 const companies = ref([])
 
 const addCompany = (company) => {
@@ -30,19 +31,16 @@ const buildParams = () => {
   const params = {}
   if (name.value) params.name = name.value
   if (industry.value.length) params.industry = industry.value
+  if (exhibitor.value) params.exhibitor_id = exhibitor.value
   router.push({ query: params })
+  exhibitor.value = null
   return params
 }
 
 const refresh = async () => {
   const data = await api.getCompanies(buildParams())
-  companies.value = data.companies
+  companies.value = data
 }
-
-const hasCompany = computed(() => {
-  const usr = ds.user
-  return usr && usr.company
-})
 
 watch(industry, refresh)
 onMounted(async () => {
@@ -73,10 +71,9 @@ onMounted(async () => {
       <div class="text-h5">Found {{ companies.length }} companies</div>
     </v-col>
     <v-col class="text-right">
-      <v-dialog v-if="ds.roleCheck('exhibitor') && !hasCompany" v-model="companyDialog">
+      <v-dialog v-if="ds.roleCheck('exhibitor')" v-model="companyDialog">
         <template v-slot:activator="{ props }">
           <ResponsiveBtn
-            v-show="ds.roleCheck('exhibitor') && !hasCompany"
             icon="add"
             text="add company"
             v-bind="props"

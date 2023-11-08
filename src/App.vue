@@ -65,9 +65,9 @@ onMounted(async () => {
               <v-list-item-title>{{ ds.user.name }} {{ ds.user.surname }}</v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="ds.roleCheck('exhibitor') && ds.user.company"
-              :to="{ name: 'companies-show', params: { id: ds.user.company.id } }"
-              title="Company"
+              v-if="ds.roleCheck('exhibitor')"
+              :to="{ name: 'companies-index', query: { exhibitor_id: ds.user.id } }"
+              title="My companies"
             />
             <v-list-item
               v-if="ds.roleCheck('organizer')"
@@ -145,7 +145,6 @@ onMounted(async () => {
             :text="ds.alertData.text"
             :title="ds.alertData.title"
             @click:close="ds.closeAlert"
-            class="positioned-alert"
           />
         </div>
         <RouterView />
@@ -207,6 +206,6 @@ onMounted(async () => {
 .alert-wrapper {
   position: fixed;
   right: 5vw;
-  z-index: 100;
+  z-index: 9999;
 }
 </style>
