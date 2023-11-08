@@ -16,6 +16,7 @@ const props = defineProps({
   trimText: { type: Number, required: false },
   invite: { type: Boolean, required: false },
   deletable: { type: Boolean, required: false },
+  invitable: { type: Boolean, required: false, default: true },
   fair: { type: Number, required: false }
 })
 
@@ -66,7 +67,11 @@ const removeCompany = async () => {
     <v-card-actions>
       <IndustryIndicators :industries="company.industries" />
       <v-spacer />
-      <v-btn v-show="invite" icon="add" @click.prevent="inviteCompany" :disabled="block_invite" />
+          <v-tooltip text="Send invitation">
+              <template v-show="invite" v-slot:activator="{props}" v-if="invitable">
+                  <v-btn v-bind="props" color="green" icon="add" @click.prevent="inviteCompany" :disabled="block_invite" />
+              </template>
+          </v-tooltip>
       <v-btn
         v-show="deletable"
         icon="delete_forever"

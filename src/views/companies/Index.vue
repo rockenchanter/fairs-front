@@ -87,7 +87,7 @@ onMounted(async () => {
   </v-row>
   <v-row>
     <v-col sm="6" md="4" v-for="company in companies" :key="company.id">
-      <CompanyCard :company="company" />
+      <CompanyCard :company="company" :invitable="false"/>
     </v-col>
   </v-row>
 </template>

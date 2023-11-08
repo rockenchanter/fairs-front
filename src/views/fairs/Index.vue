@@ -30,7 +30,7 @@ const buildParams = () => {
 
 const fetchFairs = async (params) => {
   const data = await api.getFairs(params)
-  fairs.value = data.fairs
+  fairs.value = data
 }
 
 const refresh = () => {
@@ -42,7 +42,7 @@ const refresh = () => {
 
 const addFair = async (fair_id) => {
   const data = await api.getFair(fair_id)
-  fairs.value.push(data.fair)
+  fairs.value.push(data)
   dialog.value = false
 }
 

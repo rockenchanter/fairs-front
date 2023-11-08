@@ -26,7 +26,7 @@ const emit = defineEmits(['create'])
 onMounted(async () => {
   if (props.id) {
     const dt = await api.getFair(props.id)
-    item.value = dt.fair
+    item.value = dt
   } else {
     const currentDate = new Date()
     currentDate.setDate(currentDate.getDate() + 30)
@@ -35,7 +35,7 @@ onMounted(async () => {
     const day = currentDate.getDate().toString().padStart(2, '0')
     item.value.start = item.value.end = `${year}-${month}-${day}`
   }
-  const data = await api.getCities(null)
+  const data = await api.getCities({})
   cities.value = data.cities
 })
 
@@ -58,14 +58,18 @@ const sendForm = async (event) => {
   api.initErrors(['hall_id', 'image', 'industries', 'name', 'description', 'start', 'end'], errors)
   if (item.value.id) {
     const data = await api.updateFair(item.value.id, fd)
-    if (data.errors) api.setErrors(data.errors.fair, errors)
+    if (data.errors) api.setErrors(data.errors, errors)
+    else {
+        errors.value = {};
+        ds.showAlert("success", "Fair has been updated");
+    }
   } else {
     const data = await api.createFair(fd)
     if (data.errors) {
-      api.setErrors(data.errors.fair, errors)
+      api.setErrors(data.errors, errors)
     } else {
       event.target.reset()
-      emit('create', data.fair.id)
+      emit('create', data.id)
     }
   }
 }
