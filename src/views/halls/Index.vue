@@ -1,28 +1,25 @@
 <script setup>
-import HallCard from '@/components/cards/Hall.vue'
-import HallForm from '@/components/forms/Hall.vue'
-import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
-import { reactive, ref, onMounted, computed } from 'vue'
+import { reactive, ref, onMounted, computed, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
-import { watch } from 'vue'
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
+import HallCard from '@/components/cards/Hall.vue'
+import HallForm from '@/components/forms/Hall.vue'
 
+// composables
 const api = useApi()
 const ds = useDataStore()
 const route = useRoute()
 const router = useRouter()
 
+// variables
+const cities = ref([])
 const halls = reactive([])
 const hall_id = ref(null)
 const dialog = ref(false)
 const confDialog = ref(false)
-
-// search
-const cities = ref([])
-const name = ref(route.query.name)
-const city = ref(route.query.city)
-
 const headers = [
   { title: 'Id', key: 'id' },
   { title: 'Name', key: 'name' },
@@ -33,6 +30,11 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false }
 ]
 
+// search parameters
+const name = ref(route.query.name)
+const city = ref(route.query.city)
+
+// computed props and functions
 const visible_halls = computed(() => {
   const data = []
   for (let h of halls) if (h.public == 'true') data.push(h)

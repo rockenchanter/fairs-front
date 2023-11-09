@@ -20,17 +20,17 @@ const sendForm = async (event) => {
   api.initErrors(['description', 'path'], errors)
   if (props.image) {
     const data = await api.updateImage(item.id, fd)
-    if (data.errors) api.setErrors(data.errors.image, errors)
+    if (data.errors) api.setErrors(data.errors, errors)
     else {
       ds.showAlert('success', 'Image has been updated')
     }
   } else {
     const data = await api.createImage(fd)
-    if (data.errors) api.setErrors(data.errors.image, errors)
+    if (data.errors) api.setErrors(data.errors, errors)
     else {
       event.target.reset()
       ds.showAlert('success', 'Image has been saved')
-      emit('create', data.image)
+      emit('create', data)
     }
   }
 }

@@ -24,11 +24,11 @@ const sendForm = async (event) => {
   if (item.value.id) {
     const data = await api.updateHall(item.value.id, fd)
     if (data.errors) api.setErrors(data.errors, errors)
-    else emit('update', data.hall)
+    else emit('update', data.id)
   } else {
     const data = await api.createHall(fd)
     if (data.errors) api.setErrors(data.errors, errors)
-    else emit('close', data.hall)
+    else emit('close', data)
   }
 }
 

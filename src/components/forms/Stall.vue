@@ -20,14 +20,14 @@ const sendForm = async (event) => {
   api.initErrors(['electricity', 'network', 'support', 'image', 'max_amount', 'size'], errors)
   if (props.stall) {
     const data = await api.updateStall(item.id, fd)
-    if (data.errors) api.setErrors(data.errors.stall, errors)
+    if (data.errors) api.setErrors(data.errors, errors)
     else ds.showAlert('success', 'Stall has been updated')
   } else {
     const data = await api.createStall(fd)
-    if (data.errors) api.setErrors(data.errors.stall, errors)
+    if (data.errors) api.setErrors(data.errors, errors)
     else {
       event.target.reset()
-      emit('create', data.stall)
+      emit('create', data)
     }
   }
 }
