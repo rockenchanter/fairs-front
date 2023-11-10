@@ -73,12 +73,7 @@ onMounted(async () => {
     <v-col class="text-right">
       <v-dialog v-if="ds.roleCheck('exhibitor')" v-model="companyDialog">
         <template v-slot:activator="{ props }">
-          <ResponsiveBtn
-            icon="add"
-            text="add company"
-            v-bind="props"
-            color="primary"
-          />
+          <ResponsiveBtn icon="add" text="add company" v-bind="props" color="primary" />
         </template>
 
         <CompanyForm @close="addCompany" />
@@ -87,7 +82,7 @@ onMounted(async () => {
   </v-row>
   <v-row>
     <v-col sm="6" md="4" v-for="company in companies" :key="company.id">
-      <CompanyCard :company="company" :invitable="false"/>
+      <CompanyCard :company="company" :invitable="false" />
     </v-col>
   </v-row>
 </template>

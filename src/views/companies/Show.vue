@@ -63,6 +63,9 @@ watch(
           <div class="mb-5">
             <IndustryIndicators :industries="company.industries" />
             <v-spacer class="mb-2" />
+            <div v-for="address in company.addresses" class="mb-2">
+              <v-icon icon="place" />{{ address.street }}, {{ address.zipcode }} {{ address.city }}
+            </div>
             <div>
               <v-dialog v-model="editForm">
                 <template v-slot:activator="{ props }">

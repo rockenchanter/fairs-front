@@ -6,6 +6,7 @@ export const useDataStore = defineStore('data', () => {
     mobile: false,
     user: null,
     industries: null,
+    invitations: [],
     dialogs: {
       auth: false,
       hall: false
@@ -27,10 +28,12 @@ export const useDataStore = defineStore('data', () => {
   const mobile = computed(() => data.mobile)
   const user = computed(() => data.user)
   const industries = computed(() => data.industries)
+  const invitations = computed(() => data.invitations)
   const alertData = computed(() => data.alert)
   const alert = computed(() => data.alert.visible)
   const roleCheck = (role) => data.user && data.user.role == role
 
+  const setInvitations = (invites) => (data.invitations = invites)
   const setMobile = (newValue) => (data.mobile = newValue)
   const setUser = (newUser) => (data.user = newUser)
   const setUserCompany = (cmpny) => (data.user.company = cmpny)
@@ -49,11 +52,13 @@ export const useDataStore = defineStore('data', () => {
     mobile,
     user,
     industries,
+    invitations,
     roleCheck,
     setMobile,
     setUser,
     setUserCompany,
     setIndustries,
+    setInvitations,
     alert,
     alertData,
     showAlert,

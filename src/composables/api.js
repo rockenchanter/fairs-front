@@ -33,10 +33,26 @@ export function useApi() {
     })
   }
 
-  return {
+  const fetchInvites = async () => {
+    if (store.user) {
+      const dset = await API.getInvitations()
+      console.log(dset)
+      if (dset.length) {
+        const text =
+          store.user.role == 'exhibitor' ? 'You have new invitation' : 'You have new request'
+        store.showAlert('info', text, 'Action required')
+      }
+      store.setInvitations(dset)
+    }
+  }
+
+  const API = {
     login: async (fd) => {
       const resp = await post('/api/login', fd)
-      if (!resp.errors) store.setUser(resp.user)
+      if (!resp.errors) {
+        store.setUser(resp.user)
+        fetchInvites()
+      }
       return resp
     },
     logout: async () => {
@@ -48,7 +64,10 @@ export function useApi() {
       if (!resp.errors) store.setUser(resp.user)
       return resp
     },
-    authenticate: async (params) => await get('/api/authenticate', params),
+    authenticate: async (params) => {
+      fetchInvites()
+      return await get('/api/authenticate', params)
+    },
 
     getHall: async (id) => await get(`/api/halls/${id}`),
     getCompany: async (id) => await get(`/api/companies/${id}`),
@@ -90,4 +109,5 @@ export function useApi() {
       for (const [key, value] of Object.entries(errors)) reactive_prop[key] = value
     }
   }
+  return API
 }

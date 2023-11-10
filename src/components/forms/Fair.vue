@@ -60,8 +60,8 @@ const sendForm = async (event) => {
     const data = await api.updateFair(item.value.id, fd)
     if (data.errors) api.setErrors(data.errors, errors)
     else {
-        errors.value = {};
-        ds.showAlert("success", "Fair has been updated");
+      errors.value = {}
+      ds.showAlert('success', 'Fair has been updated')
     }
   } else {
     const data = await api.createFair(fd)

@@ -12,7 +12,7 @@ onMounted(async () => {
   const data = await api.getInvitations()
   const is_exhibitor = ds.roleCheck('exhibitor')
   const invites = []
-  for (let invite of data.invitations) {
+  for (let invite of data) {
     if (!is_exhibitor && !invite.invitation && invite.status == 0) invites.push(invite)
     else if (is_exhibitor && !invite.stall_id) invites.push(invite)
   }

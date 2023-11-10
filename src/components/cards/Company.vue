@@ -67,11 +67,17 @@ const removeCompany = async () => {
     <v-card-actions>
       <IndustryIndicators :industries="company.industries" />
       <v-spacer />
-          <v-tooltip text="Send invitation">
-              <template v-show="invite" v-slot:activator="{props}" v-if="invitable">
-                  <v-btn v-bind="props" color="green" icon="add" @click.prevent="inviteCompany" :disabled="block_invite" />
-              </template>
-          </v-tooltip>
+      <v-tooltip text="Send invitation">
+        <template v-show="invite" v-slot:activator="{ props }" v-if="invitable">
+          <v-btn
+            v-bind="props"
+            color="green"
+            icon="add"
+            @click.prevent="inviteCompany"
+            :disabled="block_invite"
+          />
+        </template>
+      </v-tooltip>
       <v-btn
         v-show="deletable"
         icon="delete_forever"

@@ -125,8 +125,11 @@ onMounted(async () => {
           prepend-icon="mail"
         >
           <v-list-item-title>
-            {{ ds.roleCheck('exhibitor') ? 'Invitations' : 'Requests' }}</v-list-item-title
-          >
+            {{ ds.roleCheck('exhibitor') ? 'Invitations' : 'Requests' }}
+            <span :class="ds.invitations.length ? 'text-red' : 'text-green'">
+              ({{ ds.invitations.length }})
+            </span>
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
