@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
 
+import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import ResponsiveBtn from '../ResponsiveBtn.vue'
 import StallCard from './Stall.vue'
 import { computed } from 'vue'
@@ -19,11 +20,14 @@ const stallDialog = ref(false)
 const selectedItem = ref({})
 const stalls = ref([])
 const respondable = ref(true)
+const fair = ref({ industries: [] })
 
 const decision = ref(0)
 
 onMounted(async () => {
-  const data = await api.getStalls({ hall_id: item.fair.hall_id })
+  const data = await api.getStalls({ hall_id: item.fair.hall_id, fair_id: item.fair_id })
+  const fair_data = await api.getFair(item.fair_id)
+  fair.value = fair_data
   stalls.value = data
 })
 
@@ -69,33 +73,28 @@ const declineInvitation = () => {
 
 <template>
   <v-card>
-    <v-img :src="item.fair.image" />
+    <v-img :src="fair.image" />
     <v-card-item density="compact">
-      <v-card-title>{{ item.fair.name }}</v-card-title>
+      <v-card-title>{{ fair.name }}</v-card-title>
+      <v-card-subtitle><IndustryIndicators :industries="fair.industries" /></v-card-subtitle>
     </v-card-item>
 
     <v-card-text class="mt-3">
       <!-- invitation -->
       <div v-if="item.invitation || (!item.stall_id && item.status == 1)">
         <RouterLink
-          :to="{ name: 'profile', params: { id: item.fair.organizer_id } }"
+          :to="{ name: 'profile', params: { id: fair.organizer_id } }"
           class="font-weight-bold"
         >
-          {{ item.fair.organizer.name }}
-          {{ item.fair.organizer.surname }}
+          {{ fair.organizer.name }}
+          {{ fair.organizer.surname }}
         </RouterLink>
         has invited you.
       </div>
 
       <!-- request -->
       <div v-else>
-        <RouterLink
-          :to="{ name: 'profile', params: { id: item.company.exhibitor_id } }"
-          class="font-weight-bold"
-        >
-          {{ item.company.exhibitor.name }} {{ item.company.exhibitor.surname }}
-        </RouterLink>
-        representing
+        Company
         <RouterLink
           :to="{ name: 'companies-show', params: { id: item.company.id } }"
           class="font-weight-bold"
@@ -155,6 +154,7 @@ const declineInvitation = () => {
                   v-if="availableStalls.length"
                 >
                   <StallCard
+                    actions
                     :stall="stall"
                     :color="selectedItem.id == stall.id ? 'indigo-lighten-4' : ''"
                     @click="selectedItem = stall"

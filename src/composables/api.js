@@ -36,7 +36,6 @@ export function useApi() {
   const fetchInvites = async () => {
     if (store.user) {
       const dset = await API.getInvitations()
-      console.log(dset)
       if (dset.length) {
         const text =
           store.user.role == 'exhibitor' ? 'You have new invitation' : 'You have new request'
@@ -45,6 +44,14 @@ export function useApi() {
       store.setInvitations(dset)
     }
   }
+  const fetchCompanies = async () => {
+    if (store.roleCheck('exhibitor'))
+      store.setCompanies(
+        await API.getCompanies({
+          exhibitor_id: store.user.id
+        })
+      )
+  }
 
   const API = {
     login: async (fd) => {
@@ -52,12 +59,14 @@ export function useApi() {
       if (!resp.errors) {
         store.setUser(resp.user)
         fetchInvites()
+        fetchCompanies()
       }
       return resp
     },
     logout: async () => {
       get('/api/logout')
       store.setUser(null)
+      store.setCompanies([])
     },
     register: async (fd) => {
       const resp = await post('/api/register', fd)
@@ -65,8 +74,12 @@ export function useApi() {
       return resp
     },
     authenticate: async (params) => {
+      const data = await get('/api/authenticate', params)
+      if (data.user) store.setUser(data.user)
+      if (data.industries) store.setIndustries(data.industries)
       fetchInvites()
-      return await get('/api/authenticate', params)
+      fetchCompanies()
+      return data
     },
 
     getHall: async (id) => await get(`/api/halls/${id}`),

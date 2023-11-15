@@ -28,15 +28,62 @@ onBeforeRouteUpdate(async (to, from) => {
 <template>
   <v-tabs v-model="tab" bg-color="primary">
     <v-tab prepend-icon="info" value="one">Information</v-tab>
-    <v-tab prepend-icon="collections" value="two">Gallery</v-tab>
-    <v-tab prepend-icon="storefront" value="four">Stalls</v-tab>
-    <v-tab prepend-icon="event" value="three">Events</v-tab>
+    <v-tab prepend-icon="collections" value="two" v-show="hall.images && hall.images.length"
+      >Gallery</v-tab
+    >
+    <v-tab prepend-icon="storefront" value="four" v-show="hall.stalls && hall.stalls.length"
+      >Stalls</v-tab
+    >
+    <v-tab prepend-icon="event" value="three" v-show="fairs.length">Events</v-tab>
   </v-tabs>
 
   <v-container>
     <v-window v-model="tab">
       <v-window-item value="one">
-        <div class="mb-5 text-h4">{{ hall.name }}</div>
+        <div class="mb-2 text-h4">{{ hall.name }}</div>
+        <div>
+          <v-tooltip text="Parking">
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                class="me-2"
+                v-if="hall.parking"
+                icon="local_parking"
+                color="primary"
+              />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Free Wi-Fi">
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                class="me-2"
+                v-if="hall.internet"
+                icon="wifi"
+                color="primary"
+              />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Pets friendly">
+            <template v-slot:activator="{ props }">
+              <v-icon v-bind="props" class="me-2" v-if="hall.pets" icon="pets" color="primary" />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Accessible for everyone">
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                class="me-2"
+                v-if="hall.dissability"
+                icon="accessible"
+                color="primary"
+              />
+            </template>
+          </v-tooltip>
+        </div>
+        <div class="my-2">
+          <v-icon icon="place" /> {{ hall.street }}, {{ hall.zipcode }} {{ hall.city }}
+        </div>
         <p>{{ hall.description }}</p>
       </v-window-item>
 

@@ -22,7 +22,7 @@ const exhibitor = ref(route.query.exhibitor_id || null)
 const companies = ref([])
 
 const addCompany = (company) => {
-  ds.setUserCompany(company)
+  ds.addCompany(company)
   companyDialog.value = false
   companies.value.push(company)
 }

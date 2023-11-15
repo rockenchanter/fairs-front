@@ -72,7 +72,12 @@ onBeforeRouteUpdate(async (to, from) => {
       <v-col md="10">
         <v-tabs v-model="tab" color="primary">
           <v-tab prepend-icon="info" value="one">Information</v-tab>
-          <v-tab prepend-icon="account_circle" value="two">Guests ({{ guests.length }})</v-tab>
+          <v-tab
+            prepend-icon="account_circle"
+            value="two"
+            v-show="guests.length || (ds.roleCheck('organizer') && item.organizer_id == ds.user.id)"
+            >Guests ({{ guests.length }})</v-tab
+          >
         </v-tabs>
       </v-col>
     </v-row>
@@ -219,8 +224,18 @@ onBeforeRouteUpdate(async (to, from) => {
               :invitable="false"
             />
           </v-col>
-          <v-col v-else class="text-center">
-            <v-img src="/assets/empty.svg" />
+          <v-col v-else>
+            <v-row>
+              <v-col cols="4">
+                <div class="text-h3">
+                  No guests,<br />
+                  yet!
+                </div>
+              </v-col>
+              <v-col>
+                <v-img src="/assets/empty.svg" max-height="300" />
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-window-item>
