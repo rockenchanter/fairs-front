@@ -1,7 +1,7 @@
 <template>
   <v-row class="mt-5">
     <v-col cols="12" md="6">
-      <v-img max-height="500" src="/assets/welcome.svg" />
+      <v-img max-height="500" src="/welcome.svg" />
     </v-col>
 
     <v-col cols="12" md="6">
@@ -40,7 +40,7 @@
     </v-col>
 
     <v-col cols="12" md="6" order="1" md-order="2">
-      <v-img max-height="500" src="/assets/conversation.svg" />
+      <v-img max-height="500" src="/conversation.svg" />
     </v-col>
   </v-row>
 </template>

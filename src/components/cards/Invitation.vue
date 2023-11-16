@@ -161,7 +161,7 @@ const declineInvitation = () => {
                   />
                 </v-col>
                 <v-col v-else class="text-center">
-                  <v-img src="/assets/empty.svg" />
+                  <v-img src="/empty.svg" />
                 </v-col>
               </v-row>
             </v-card-text>

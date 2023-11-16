@@ -15,17 +15,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
     },
-    server: {
-        proxy: {
-            '/assets': {
-                target: 'http://localhost:5000',
-                changeOrigin: true,
-            },
-            '/api': {
-                target: 'http://localhost:5000',
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, ''),
-            },
-        },
+    build: {
+        assetsDir: 'static'
     },
 })

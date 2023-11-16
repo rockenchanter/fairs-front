@@ -156,7 +156,7 @@ onMounted(async () => {
       <v-container class="pt-10">
         <v-row justify="space-between">
           <v-col md="3">
-            <v-img src="/assets/logo.svg" />
+            <v-img src="/logo.svg" />
           </v-col>
 
           <v-col md="4">
