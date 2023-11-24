@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
@@ -25,11 +25,13 @@ const fair = ref({ industries: [] })
 const decision = ref(0)
 
 onMounted(async () => {
-  const data = await api.getStalls({ hall_id: item.fair.hall_id, fair_id: item.fair_id })
   const fair_data = await api.getFair(item.fair_id)
   fair.value = fair_data
-  stalls.value = data
 })
+
+const getStalls = async () => {
+  stalls.value = await api.getStalls({ hall_id: item.fair.hall_id, fair_id: item.fair_id })
+}
 
 const availableStalls = computed(() => {
   const dt = []
@@ -38,6 +40,10 @@ const availableStalls = computed(() => {
   }
 
   return dt
+})
+
+watch(stallDialog, (neww, old) => {
+  if (neww == true) getStalls()
 })
 
 const sendResponse = async () => {
@@ -52,6 +58,8 @@ const sendResponse = async () => {
     if (stallDialog.value) stallDialog.value = false
     respondable.value = false
     ds.showAlert('success', '', 'Success')
+  } else {
+    ds.showAlert('error', data.errors.invitation, 'Error')
   }
 }
 
@@ -76,20 +84,15 @@ const declineInvitation = () => {
     <v-img :src="fair.image" />
     <v-card-item density="compact">
       <v-card-title>{{ fair.name }}</v-card-title>
-      <v-card-subtitle><IndustryIndicators :industries="fair.industries" /></v-card-subtitle>
+      <v-card-subtitle>
+        <IndustryIndicators :industries="fair.industries" />
+      </v-card-subtitle>
     </v-card-item>
 
     <v-card-text class="mt-3">
       <!-- invitation -->
       <div v-if="item.invitation || (!item.stall_id && item.status == 1)">
-        <RouterLink
-          :to="{ name: 'profile', params: { id: fair.organizer_id } }"
-          class="font-weight-bold"
-        >
-          {{ fair.organizer.name }}
-          {{ fair.organizer.surname }}
-        </RouterLink>
-        has invited you.
+        <span class="font-weight-bold">{{ item.company.name }}</span> received invitation.
       </div>
 
       <!-- request -->

@@ -18,4 +18,17 @@ export default defineConfig({
     build: {
         assetsDir: 'static'
     },
+    server: {
+        proxy: {
+            '/assets': {
+                target: 'http://localhost:5000',
+                changeOrigin: true,
+            },
+            '/api': {
+                target: 'http://localhost:5000',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+        },
+    },
 })

@@ -11,7 +11,8 @@ api.initErrors(['name', 'surname', 'email', 'password', 'image'], errors)
 
 const sendForm = async (event) => {
   api.initErrors(['name', 'surname', 'email', 'password', 'image'], errors)
-  const resp = await api.register(new FormData(event.target))
+  const fd = new FormData(event.target)
+  const resp = await api.register(fd)
   if (resp.errors) api.setErrors(resp.errors, errors)
   else emit('close')
 }
@@ -77,7 +78,7 @@ data.role = roles[0]
             v-model="data.role"
             name="role"
             label="Role"
-            prepend-inner-icon="photo_camera"
+            prepend-inner-icon="badge"
         /></v-col>
       </v-row>
       <v-row>

@@ -6,6 +6,7 @@ import { useUtils } from '@/composables/utils'
 import { ref } from 'vue'
 
 const { trim } = useUtils()
+const emit = defineEmits(['inviteSent'])
 const api = useApi()
 const ds = useDataStore()
 const block_invite = ref(false)
@@ -25,8 +26,10 @@ const inviteCompany = async () => {
   fd.append('fair_id', props.fair)
   fd.append('company_id', props.company.id)
   const data = await api.createInvitation(fd)
-  if (!data.errors) ds.showAlert('success', '', 'Invitation has been sent')
-  else ds.showAlert('error', null, data.errors.invitation)
+  if (!data.errors) {
+    ds.showAlert('success', '', 'Invitation has been sent')
+    emit('inviteSent', data)
+  } else ds.showAlert('error', null, data.errors.invitation)
   block_invite.value = true
 }
 
