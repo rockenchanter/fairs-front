@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import { useDataStore } from '@/stores/data.js'
@@ -7,8 +7,10 @@ import IndustryIndicators from '@/components/IndustryIndicators.vue'
 import CompanyForm from '@/components/forms/Company.vue'
 import FairCard from '@/components/cards/Fair.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
+import GoogleMap from '@/components/GoogleMap.vue'
 
-const company = ref({ exhibitor: {}, industries: [] })
+const company = ref({ exhibitor: {}, industries: [], addresses: [] })
+const addresses = reactive([])
 const api = useApi()
 const ds = useDataStore()
 const route = useRoute()
@@ -19,6 +21,10 @@ const editForm = ref(false)
 const fetchCompany = async (id) => {
   const data = await api.getCompany(id)
   const f = await api.getFairs({ company_id: data.id })
+  addresses.splice(0)
+  for (let addr of data.addresses) {
+    addresses.push(addr)
+  }
   company.value = data
   fairs.value = f
 }
@@ -63,9 +69,6 @@ watch(
           <div class="mb-5">
             <IndustryIndicators :industries="company.industries" />
             <v-spacer class="mb-2" />
-            <div v-for="address in company.addresses" class="mb-2">
-              <v-icon icon="place" />{{ address.street }}, {{ address.zipcode }} {{ address.city }}
-            </div>
             <div>
               <v-dialog v-model="editForm">
                 <template v-slot:activator="{ props }">
@@ -84,6 +87,9 @@ watch(
           <p>{{ company.description }}</p>
         </v-col>
       </v-row>
+
+      <div class="text-h5 my-7">Find us here</div>
+      <GoogleMap :addresses="addresses" />
     </v-window-item>
 
     <v-window-item value="two">

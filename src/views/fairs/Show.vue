@@ -8,10 +8,13 @@ import FairForm from '@/components/forms/Fair.vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
 import IndustrySelect from '@/components/IndustrySelect.vue'
 import IndustryIndicators from '@/components/IndustryIndicators.vue'
+import GoogleMap from '@/components/GoogleMap.vue'
 
 const tab = ref('one')
 const item = ref({ hall: {}, organizer: {} })
 const stalls = ref([])
+const address = ref({})
+const dataFetched = ref(false)
 
 // composables & pinia stores
 const api = useApi()
@@ -77,11 +80,19 @@ const findCompanies = async () => {
 }
 
 const fetchFair = async (id) => {
+  dataFetched.value = false
   const data = await api.getFair(id)
+  address.value = {
+    city: data.hall.city,
+    street: data.hall.street,
+    zipcode: data.hall.zipcode
+  }
   item.value = data
   stalls.value = await api.getStalls({ hall_id: data.hall_id })
-  const dinv = await api.getInvitations({ fair_id: id })
-  invites.value = dinv
+  if (ds.user) {
+    const dinv = await api.getInvitations({ fair_id: id })
+    invites.value = dinv
+  }
   for (let ind of data.industries) industries.value.push(ind.id)
   const ids = []
   for (let fp of item.value.fair_proxies) if (fp.status == 1) ids.push(fp.company_id)
@@ -89,6 +100,7 @@ const fetchFair = async (id) => {
     const cdata = await api.getCompanies({ id: ids })
     guests.value = cdata
   }
+  dataFetched.value = true
 }
 
 const deleteFair = async () => {
@@ -219,19 +231,13 @@ onBeforeRouteUpdate(async (to, from) => {
             </v-row>
 
             <v-row>
-              <v-col class="text-subtitle-2">
-                <span class="me-5">
-                  <v-icon icon="place" /> {{ item.hall.city }}, {{ item.hall.street }}
-                </span>
-                <v-icon icon="location_city" /> {{ item.hall.name }}
-              </v-col>
-            </v-row>
-
-            <v-row>
               <v-col>
                 <p>{{ item.description }}</p>
               </v-col>
             </v-row>
+
+            <div class="my-5 text-h6">Fair location</div>
+            <GoogleMap :address="address" v-if="dataFetched" />
           </v-col>
         </v-row>
       </v-window-item>

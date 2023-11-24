@@ -4,19 +4,29 @@ import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useApi } from '@/composables/api.js'
 import StallCard from '@/components/cards/Stall.vue'
 import FairCard from '@/components/cards/Fair.vue'
+import GoogleMap from '@/components/GoogleMap.vue'
 
 const tab = ref('one')
 const api = useApi()
 const route = useRoute()
+const dataFetched = ref(false)
 
 const hall = ref({})
+const address = ref({})
 const fairs = ref([])
 
 const fetchHall = async (id) => {
+  dataFetched.value = false
   const data = await api.getHall(id)
   const data_fairs = await api.getFairs({ hall_id: data.id })
+  address.value = {
+    city: data.city,
+    street: data.street,
+    zipcode: data.zipcode
+  }
   hall.value = data
   fairs.value = data_fairs
+  dataFetched.value = true
 }
 
 onMounted(() => fetchHall(route.params.id))
@@ -81,10 +91,9 @@ onBeforeRouteUpdate(async (to, from) => {
             </template>
           </v-tooltip>
         </div>
-        <div class="my-2">
-          <v-icon icon="place" /> {{ hall.street }}, {{ hall.zipcode }} {{ hall.city }}
-        </div>
         <p>{{ hall.description }}</p>
+        <div class="my-5 text-h6">Hall location</div>
+        <GoogleMap :address="address" v-if="dataFetched" />
       </v-window-item>
 
       <v-window-item value="two">
