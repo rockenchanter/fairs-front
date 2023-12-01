@@ -5,6 +5,7 @@ import { useDisplay } from 'vuetify'
 
 import LoginForm from '@/components/forms/Login.vue'
 import RegistrationForm from '@/components/forms/Registration.vue'
+import PasswordForm from '@/components/forms/Password.vue'
 import { useDataStore } from '@/stores/data.js'
 import { useApi } from '@/composables/api.js'
 
@@ -15,6 +16,7 @@ const { mobile } = useDisplay()
 
 const dataLoaded = ref(false)
 const dialog = ref(false)
+const passwordDialog = ref(false)
 const navigation = ref(false)
 const tab = ref('login')
 const links = [
@@ -72,6 +74,7 @@ onMounted(async () => {
               :to="{ name: 'fairs-index', query: { organizer_id: ds.user.id } }"
               title="My fairs"
             />
+            <v-list-item title="Change password" @click="passwordDialog = true" />
             <v-list-item title="Logout" @click="logout" />
           </v-list>
         </v-menu>
@@ -86,6 +89,10 @@ onMounted(async () => {
         />
       </template>
     </v-app-bar>
+
+    <v-dialog v-model="passwordDialog" width="50%">
+      <PasswordForm @close="passwordDialog = false" />
+    </v-dialog>
 
     <v-dialog v-model="dialog">
       <v-card>

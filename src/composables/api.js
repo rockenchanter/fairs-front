@@ -81,6 +81,10 @@ export function useApi() {
       fetchCompanies()
       return data
     },
+    changePassword: async (fd) => {
+      const data = await post('/api/changePassword', fd)
+      return data
+    },
 
     getHall: async (id) => await get(`/api/halls/${id}`),
     getCompany: async (id) => await get(`/api/companies/${id}`),
