@@ -6,6 +6,7 @@ import { useDataStore } from '@/stores/data.js'
 import FairForm from '@/components/forms/Fair.vue'
 import FairCard from '@/components/cards/Fair.vue'
 import ResponsiveBtn from '@/components/ResponsiveBtn.vue'
+import IndustrySelect from '@/components/IndustrySelect.vue'
 
 const api = useApi()
 const ds = useDataStore()
@@ -19,12 +20,15 @@ const organizer_id = ref(route.query.organizer_id)
 
 const cities = ref([])
 const fairs = ref([])
+const industry = ref(route.query.industry || [])
+const setIndustries = (newValue) => (industry.value = newValue)
 
 const buildParams = () => {
   const params = {}
   if (organizer_id.value) params.organizer_id = organizer_id.value
   if (name.value) params.name = name.value
   if (city.value) params.city = city.value
+  if (industry.value.length) params.industry = industry.value
   return params
 }
 
@@ -47,6 +51,7 @@ const addFair = async (fair_id) => {
 }
 
 watch(city, refresh)
+watch(industry, refresh)
 watch(
   () => route.query.organizer_id,
   (neww, old) => {
@@ -67,7 +72,7 @@ onMounted(async () => {
 <template>
   <v-container>
     <v-row>
-      <v-col cols="6" sm="5">
+      <v-col cols="6" md="4">
         <v-text-field
           v-model="name"
           name="name"
@@ -79,7 +84,7 @@ onMounted(async () => {
           @click:clear="refresh"
         />
       </v-col>
-      <v-col cols="6" sm="5">
+      <v-col cols="6" md="4">
         <v-select
           v-model="city"
           clearable
@@ -90,6 +95,9 @@ onMounted(async () => {
           label="City"
           prepend-inner-icon="location_city"
         />
+      </v-col>
+      <v-col md="4">
+        <IndustrySelect @update="setIndustries" />
       </v-col>
     </v-row>
 
